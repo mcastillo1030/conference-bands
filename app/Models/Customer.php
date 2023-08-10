@@ -35,7 +35,18 @@ class Customer extends Model
      */
     public function phone(): string
     {
-        return  empty($this->phone_number) ? '' : '(' . substr($this->phone_number, 0, 3) . ') ' . substr($this->phone_number, 3, 3) . '-' . substr($this->phone_number, 6);
+        $formatted = '';
+
+        // if not empty, format
+        if (!empty($this->phone_number)) {
+            if (substr($this->phone_number, 0, 1) === '(' || str_contains($this->phone_number, '-')) {
+                $formatted = $this->phone_number;
+            } else {
+                $formatted = '(' . substr($this->phone_number, 0, 3) . ') ' . substr($this->phone_number, 3, 3) . '-' . substr($this->phone_number, 6);
+            }
+        }
+
+        return  $formatted;
     }
 
     /**

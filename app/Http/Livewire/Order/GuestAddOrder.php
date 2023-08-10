@@ -7,9 +7,9 @@ use App\Models\Customer;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-class AdminAddOrder extends Component
+class GuestAddOrder extends Component
 {
-    /**
+     /**
      * Bracelets.
      *
      * @var array
@@ -45,7 +45,7 @@ class AdminAddOrder extends Component
     public $phone = '';
 
     protected $listeners = [
-        'orderSaved' => 'clearForm',
+        'orderCreated' => 'clearForm',
     ];
 
     /**
@@ -140,7 +140,7 @@ class AdminAddOrder extends Component
         $this->bracelets = array_values($this->bracelets);
     }
 
-    public function adminAddOrder() {
+    public function createOrder() {
         $this->addBracelet();
         $validData = $this->validate();
 
@@ -174,27 +174,27 @@ class AdminAddOrder extends Component
         }
 
         // emit saved event
-        $this->emit('orderSaved', $order->id);
+        $this->emit('orderCreated', $order->id);
     }
 
     public function clearForm() {
+        // $this->bracelets = [];
+        // $this->clone = [
+        //     'number' => '',
+        //     'name' => '',
+        // ];
+        // $this->firstName = '';
+        // $this->lastName = '';
+        // $this->email = '';
+        // $this->phone = '';
+        // $this->resetErrorBag();
         // $this->reset();
-        $this->bracelets = [];
-        $this->clone = [
-            'number' => '',
-            'name' => '',
-        ];
-        $this->firstName = '';
-        $this->lastName = '';
-        $this->email = '';
-        $this->phone = '';
-        $this->resetErrorBag();
     }
 
     public function render()
     {
-        return view('livewire.order.admin-add-order', [
-            'hasBracelets' => Bracelet::where('status', 'system')->exists(),
+        return view('livewire.order.guest-add-order', [
+            'canCreate' => Bracelet::where('status', 'system')->exists(),
         ]);
     }
 }

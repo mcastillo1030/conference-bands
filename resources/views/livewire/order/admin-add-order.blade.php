@@ -38,7 +38,12 @@
                 <!-- Customer Phone -->
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="phone" value="{{ __('Phone Number') }}" />
-                    <x-input wire:model="phone" id="phone" type="text" class="mt-1 block w-full" />
+                    <x-input
+                        wire:model="phone"
+                        id="phone"
+                        type="text"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                        class="mt-1 block w-full" />
                     <x-input-error for="phone" class="mt-2" />
                 </div>
                 <!-- Order Bracelet(s) -->
