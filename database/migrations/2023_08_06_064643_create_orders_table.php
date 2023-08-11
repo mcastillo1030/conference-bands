@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('number')->unique()->nullable();
             $table->enum('order_type', ['in-person', 'online'])->default('in-person');
             // $table->morphs('orderable');
-            $table->
             $table->timestamps();
         });
     }
