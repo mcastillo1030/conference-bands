@@ -290,7 +290,7 @@
                                 </x-secondary-button>
 
                                 <x-danger-button class="ml-3" wire:click="deleteOrder" wire:loading.attr="disabled">
-                                    {{ __('Delete Oorder') }}
+                                    {{ __('Delete Order') }}
                                 </x-danger-button>
                             </x-slot>
                         </x-confirmation-modal>

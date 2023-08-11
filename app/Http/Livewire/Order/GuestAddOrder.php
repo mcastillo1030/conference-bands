@@ -52,7 +52,7 @@ class GuestAddOrder extends Component
     /**
      * Honeypot data.
      */
-    public HoneypotData $extraFields;
+    public HoneypotData|null $extraFields = null;
 
     /**
      * Show confirmation dialog.
@@ -198,7 +198,15 @@ class GuestAddOrder extends Component
     }
 
     public function clearForm() {
-        $this->reset();
+        $this->reset([
+            'bracelets',
+            'firstName',
+            'lastName',
+            'email',
+            'phone',
+            'clone',
+            'extraFields'
+        ]);
         $this->confirmingOrderCreation = true;
     }
 

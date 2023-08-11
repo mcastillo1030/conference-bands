@@ -7,26 +7,26 @@
                 <div class="col-span-6 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                     <div class="grow">
                         <x-guest-label for="firstName" value="{{ __('First Name')}}" />
-                        <x-guest-input wire:model="firstName" type="text" class="mt-1 w-full" />
+                        <x-guest-input wire:model.defer="firstName" type="text" class="mt-1 w-full" />
                         <x-guest-input-error for="firstName" class="mt-2" />
                     </div>
                     <div class="grow">
                         <x-guest-label for="lastName" value="{{ __('Last Name')}}" />
-                        <x-guest-input wire:model="lastName" type="text" class="mt-1 w-full" />
+                        <x-guest-input wire:model.defer="lastName" type="text" class="mt-1 w-full" />
                         <x-guest-input-error for="lastName" class="mt-2" />
                     </div>
                 </div>
                 <!-- Email -->
                 <div class="col-span-6">
                     <x-guest-label for="email" value="{{ __('Email Address')}}" />
-                    <x-guest-input wire:model="email" required id="email" type="email" class="mt-1 w-full" />
+                    <x-guest-input wire:model.defer="email" required id="email" type="email" class="mt-1 w-full" />
                     <x-guest-input-error for="email" class="mt-2" />
                 </div>
                 <!-- Phone -->
                 <div class="col-span-6">
                     <x-guest-label for="phone" value="{{ __('Phone Number')}}" />
                     <x-guest-input
-                        wire:model="phone"
+                        wire:model.defer="phone"
                         id="phone"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');"
                         maxlength="12"
@@ -43,7 +43,7 @@
                                 <x-guest-label for="bracelets.{{$index}}.number" value="{{ __('Bracelet Number') }}" />
                                 <x-guest-input
                                     type="tel"
-                                    wire:model="bracelets.{{$index}}.number"
+                                    wire:model.defer="bracelets.{{$index}}.number"
                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
                                     maxlength="4"
                                     pattern="\d{1,4}"
@@ -53,7 +53,7 @@
                             </div>
                             <div class="xl:col-span-2 xl:relative">
                                 <x-guest-label for="bracelets.{{$index}}.name" value="{{ __('Bracelet Name (optional)') }}" />
-                                <x-guest-input type="text" wire:model="bracelets.{{$index}}.name" class="mt-1 block w-full" />
+                                <x-guest-input type="text" wire:model.defer="bracelets.{{$index}}.name" class="mt-1 block w-full" />
                                 <x-guest-input-error for="bracelets.{{$index}}.name" class="mt-2 w-full" />
                             </div>
                             <div class="col-span-1 justify-self-start">
@@ -66,7 +66,7 @@
                             <x-guest-label for="clone.number" value="{{ __('Bracelet Number') }}" />
                             <x-guest-input
                                 type="tel"
-                                wire:model="clone.number"
+                                wire:model.defer="clone.number"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
                                 maxlength="4"
                                 pattern="\d{1,4}"
@@ -76,7 +76,7 @@
                         </div>
                         <div class="xl:col-span-2 xl:relative">
                             <x-guest-label for="clone.name" value="{{ __('Bracelet Name (optional)') }}" />
-                            <x-guest-input type="text" wire:model="clone.name" class="mt-1 block w-full" />
+                            <x-guest-input type="text" wire:model.defer="clone.name" class="mt-1 block w-full" />
                             <x-guest-input-error for="clone.name" class="mt-2 w-full" />
                         </div>
                         <div class="mt-3 xl:mt-0 xl:col-span-1 justify-self-start">
