@@ -91,24 +91,28 @@
             @endif
         </div>
 
-        <div class="flex items-center justify-end my-5 py-3 text-right">
-            <x-action-message class="mr-3" on="orderCreated">
-                <span class="text-tangerine-200 dark:text-maize-600">{{ __('Registered. Check your email for confirmation. Thanks!') }}</span>
-            </x-action-message>
+        @if ($canCreate)
+            <div class="flex items-center justify-end my-5 py-3 text-right">
+                <x-action-message class="mr-3" on="orderCreated">
+                    <span class="text-tangerine-200 dark:text-maize-600">{{ __('Registered. Check your email for confirmation. Thanks!') }}</span>
+                </x-action-message>
 
-            <x-guest-submit>
-                {{ __('Register') }}
-            </x-guest-submit>
-        </div>
+                <x-guest-submit>
+                    {{ __('Register') }}
+                </x-guest-submit>
+            </div>
+        @endif
     </form>
-    <x-guest-dialog wire:model="confirmingOrderCreation">
-        <x-slot name="title">{{ __('Thanks for Registering!') }}</x-slot>
-        <x-slot name="content">
-            <p class="text-base text-gravel-700 dark:text-ash-500">Check your email for a confirmation. Hang on to those details for your records.</p>
-            <p class="text-base mt-3 text-gravel-700 dark:text-ash-500">We look forward to seeing you!</p>
-        </x-slot>
-        <x-slot name="footer">
-            <x-guest-submit type="button" wire:loading.attr="disabled" wire:click.prevent="$toggle('confirmingOrderCreation')">OK</x-guest-button>
-        </x-slot>
-    </x-guest-dialog>
+    @if ($canCreate)
+        <x-guest-dialog wire:model="confirmingOrderCreation">
+            <x-slot name="title">{{ __('Thanks for Registering!') }}</x-slot>
+            <x-slot name="content">
+                <p class="text-base text-gravel-700 dark:text-ash-500">Check your email for a confirmation. Hang on to those details for your records.</p>
+                <p class="text-base mt-3 text-gravel-700 dark:text-ash-500">We look forward to seeing you!</p>
+            </x-slot>
+            <x-slot name="footer">
+                <x-guest-submit type="button" wire:loading.attr="disabled" wire:click.prevent="$toggle('confirmingOrderCreation')">OK</x-guest-button>
+            </x-slot>
+        </x-guest-dialog>
+    @endif
 </div>
