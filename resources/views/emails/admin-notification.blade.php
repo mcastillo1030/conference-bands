@@ -11,10 +11,10 @@ Someone has registered a new bracelet for the conference. Below are the details 
 
 ### __Bracelets:__ {{ $order->bracelets->count() }}
 <x-mail::table>
-| Bracelet Number(s)    |
-| :------------- |
+| Bracelet Number(s) | Bracelet Group |
+| :-------------| :---------- |
 @foreach ($order->bracelets as $bracelet)
-| {{ $bracelet->number }} |
+| {{ $bracelet->number }} | {{ $bracelet->group ?? 'n/a' }} |
 @endforeach
 </x-mail::table>
 
@@ -22,7 +22,7 @@ Someone has registered a new bracelet for the conference. Below are the details 
 
 You can view the full details of this order by clicking the button below.
 
-<x-mail::button :url="route('orders.show', $order->id)">
+<x-mail::button :url="route('orders.show', $order->number)">
 View Order
 </x-mail::button>
 

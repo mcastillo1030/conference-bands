@@ -4,6 +4,8 @@ use App\Http\Controllers\BraceletController;
 use App\Http\Controllers\OrderController;
 use App\Http\Livewire\Bracelet\Show as BraceletShow;
 use App\Http\Livewire\Order\Show as OrderShow;
+use App\Mail\OrderCreatedAdmin;
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +21,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/mailtest', function () {
+    // return view('welcome');
+    $order = Order::first();
+    return new OrderCreatedAdmin($order);
 });
 
 Route::middleware([
