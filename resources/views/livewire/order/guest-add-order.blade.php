@@ -39,7 +39,7 @@
                     <x-guest-label class="mb-3 uppercase" value="{{ __('Bracelets') }}" />
                     @foreach ($bracelets as $index => $bracelet)
                         <div class="mb-3 grid grid-cols-1 xl:grid-cols-5 xl:gap-4 gap-3 xl:items-end p-2 xl:p-3.5 rounded border-[1px] border-gravel-200 dark:border-ash-400">
-                            <div class="xl:col-span-2 xl:relative">
+                            <div class="xl:col-span-2 relative">
                                 <x-guest-label for="bracelets.{{$index}}.number" value="{{ __('Bracelet Number') }}" />
                                 <x-guest-input
                                     type="tel"
@@ -51,7 +51,7 @@
                                 />
                                 <x-guest-input-error for="bracelets.{{$index}}.number" class="mt-2 w-full" />
                             </div>
-                            <div class="xl:col-span-2 xl:relative">
+                            <div class="xl:col-span-2 relative">
                                 <x-guest-label for="bracelets.{{$index}}.name" value="{{ __('Bracelet Name (optional)') }}" />
                                 <x-guest-input type="text" wire:model.defer="bracelets.{{$index}}.name" class="mt-1 block w-full" />
                                 <x-guest-input-error for="bracelets.{{$index}}.name" class="mt-2 w-full" />
@@ -62,7 +62,7 @@
                         </div>
                     @endforeach
                     <div class="grid grid-cols-1 xl:grid-cols-5 xl:gap-4 gap-3 xl:items-end p-2 xl:p-3.5 rounded border-[1px] border-gravel-200 dark:border-ash-400">
-                        <div class="xl:col-span-2 xl:relative">
+                        <div class="xl:col-span-2 relative">
                             <x-guest-label for="clone.number" value="{{ __('Bracelet Number') }}" />
                             <x-guest-input
                                 type="tel"
@@ -74,7 +74,7 @@
                             />
                             <x-guest-input-error for="clone.number" class="mt-2 w-full" />
                         </div>
-                        <div class="xl:col-span-2 xl:relative">
+                        <div class="xl:col-span-2 relative">
                             <x-guest-label for="clone.name" value="{{ __('Bracelet Name (optional)') }}" />
                             <x-guest-input type="text" wire:model.defer="clone.name" class="mt-1 block w-full" />
                             <x-guest-input-error for="clone.name" class="mt-2 w-full" />
