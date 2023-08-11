@@ -1,24 +1,3 @@
-{{-- <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Revival Conference 2023: Chosen</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-        <!-- Styles -->
-        @vite('resources/css/app.css')
-        @livewireStyles
-        @livewireScripts
-    </head>
-    <body class="antialiased">
-
-    </body>
-</html> --}}
 <x-guest-layout>
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-ash-200 dark:bg-dots-lighter dark:bg-gravel-950 selection:bg-maize-400 selection:text-gravel-900 text-gravel-700 dark:text-ash-500">
         @if (Route::has('login'))
@@ -82,17 +61,11 @@
                                 <p class="mt-4 text-gravel-900 dark:text-ash-500 text-sm leading-relaxed">
                                     If you need help filling out this form, or need assistance after you've registered your bracelet, contact us at:
                                     <ul class="mt-5 flex flex-col gap-y-3">
-                                        {{-- <li class="flex align-center gap-x-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-maize-950 dark:fill-maize-900 w-6">
-                                                <path d="m12.71 16.29-.15-.12a.76.76 0 0 0-.18-.09L12.2 16a1 1 0 0 0-.91.27 1.15 1.15 0 0 0-.21.33 1 1 0 0 0 1.3 1.31 1.46 1.46 0 0 0 .33-.22 1 1 0 0 0 .21-1.09 1 1 0 0 0-.21-.31ZM16 2H8a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3Zm1 17a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1Z"/>
-                                            </svg>
-                                            <a class="dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="tel:+15555555555">(555) 555-5555</a>
-                                        </li> --}}
                                         <li class="flex align-center gap-x-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-maize-950 dark:fill-maize-900 w-6">
                                                 <path d="M19 4H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3ZM5 6h14a1 1 0 0 1 1 1l-8 4.88L4 7a1 1 0 0 1 1-1Zm15 11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.28l7.48 4.57a1 1 0 0 0 1 0L20 9.28Z"/>
                                             </svg>
-                                            <a class="dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="mailto:info@revivalmovementusa.org">info@<wbr>revivalmovementusa.org</a>
+                                            <a class="text-gravel-700 hover:text-ash-500 dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="mailto:info@revivalmovementusa.org">info@<wbr>revivalmovementusa.org</a>
                                         </li>
                                     </ul>
                                 </p>
@@ -125,17 +98,11 @@
                             <p class="mt-4 text-gravel-900 dark:text-ash-500 text-sm leading-relaxed">
                                 If you need help filling out this form, or need assistance after you've registered your bracelet, contact us at:
                                 <ul class="mt-5 flex flex-col gap-y-3">
-                                    {{-- <li class="flex align-center gap-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-maize-950 dark:fill-maize-900 w-6">
-                                            <path d="m12.71 16.29-.15-.12a.76.76 0 0 0-.18-.09L12.2 16a1 1 0 0 0-.91.27 1.15 1.15 0 0 0-.21.33 1 1 0 0 0 1.3 1.31 1.46 1.46 0 0 0 .33-.22 1 1 0 0 0 .21-1.09 1 1 0 0 0-.21-.31ZM16 2H8a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3Zm1 17a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1Z"/>
-                                        </svg>
-                                        <a class="dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="tel:+15555555555">(555) 555-5555</a>
-                                    </li> --}}
                                     <li class="flex align-center gap-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-maize-950 dark:fill-maize-900 w-6">
                                             <path d="M19 4H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3ZM5 6h14a1 1 0 0 1 1 1l-8 4.88L4 7a1 1 0 0 1 1-1Zm15 11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.28l7.48 4.57a1 1 0 0 0 1 0L20 9.28Z"/>
                                         </svg>
-                                        <a class="dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="mailto:info@revivalmovementusa.org">info@<wbr>revivalmovementusa.org</a>
+                                        <a class="text-gravel-700 hover:text-ash-500 dark:text-ash-300 dark:hover:text-ash-200 transition-colors ease-out duration-250 focus:outline focus:outline-2 focus:outline-maize-900 dark:focus:outline-maize-600 dark:focus:text-ash-200" href="mailto:info@revivalmovementusa.org">info@<wbr>revivalmovementusa.org</a>
                                     </li>
                                 </ul>
                             </p>
@@ -148,11 +115,11 @@
             <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
                 <div class="text-center text-sm text-gravel-300 dark:text-ash-600 sm:text-left">
                     <div class="flex items-center gap-4">
-                        <span>App by <a href="https://marloncastillo.dev" class="hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-maize-900 dark:focus:outline-maize-600">Marlon Castillo</a></span>
+                        <span>App by <a target="_blank" href="https://marloncastillo.dev" class="hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-maize-900 dark:focus:outline-maize-600">Marlon Castillo</a></span>
                     </div>
                 </div>
 
-                <div class="ml-4 text-sm text-gravel-300 dark:text-ash-600 sm:text-right sm:ml-0">&copy; {{ date('Y') }} <a href="https://revivalmovementusa.org" class="hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-maize-900 dark:focus:outline-maize-600">Revival Movement</a></div>
+                <div class="ml-4 text-sm text-gravel-300 dark:text-ash-600 sm:text-right sm:ml-0">&copy; {{ date('Y') }} <a target="_blank" href="https://revivalmovementusa.org" class="hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-maize-900 dark:focus:outline-maize-600">Revival Movement</a></div>
             </div>
         </div>
     </div>

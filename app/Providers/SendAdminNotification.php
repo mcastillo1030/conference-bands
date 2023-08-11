@@ -23,7 +23,7 @@ class SendAdminNotification
      */
     public function handle(OrderCreated $event): void
     {
-        Mail::to($event->order->customer->email)
+        Mail::to(config('mail.from.address'))
             ->send(new OrderCreatedAdmin($event->order));
     }
 }
