@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Order;
 
 use App\Models\Bracelet;
 use App\Models\Customer;
+use App\Providers\OrderCreated;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -67,8 +68,8 @@ class AdminAddOrder extends Component
             'bracelets.*.name' => 'nullable|string|max:255',
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
-            'email' => 'required_without:phone|email|max:255',
-            'phone' => 'required_without:email|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:255',
             'clone.number' => [
                 'required_without:bracelets',
                 'numeric',
@@ -174,7 +175,8 @@ class AdminAddOrder extends Component
         }
 
         // emit saved event
-        $this->emit('orderSaved', $order->id);
+        $this->emit('orderSaved', $order);
+        OrderCreated::dispatch($order);
     }
 
     public function clearForm() {

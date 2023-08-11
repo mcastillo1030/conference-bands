@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Order;
 
 use App\Models\Order;
+use App\Providers\ConfirmationResend;
 use Livewire\Component;
 
 class Show extends Component
@@ -40,6 +41,7 @@ class Show extends Component
      */
     protected $listeners = [
         'unlinkInterstitial',
+        'resendConfirmation' => 'emitConfirmation',
         'braceletLinked' => '$refresh',
         'braceletUnlinked' => '$refresh',
     ];
@@ -53,6 +55,18 @@ class Show extends Component
     {
         $this->confirmingBraceletUnlink = true;
         $this->braceletId = $braceletId;
+    }
+
+    /**
+     * Emit confirmation email evetn
+     *
+     * @param int $braceletId
+     */
+    public function emitConfirmation()
+    {
+        ConfirmationResend::dispatch($this->order);
+        $this->order->refresh();
+        // $this->emit('refreshComponent');
     }
 
     /**

@@ -55,4 +55,12 @@ class Order extends Model
     {
         return $this->hasMany(Bracelet::class);
     }
+
+    /**
+     * Get the notifications sent for the order.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

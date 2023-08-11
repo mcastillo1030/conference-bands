@@ -1,5 +1,6 @@
 <div>
     <form wire:submit.prevent="createOrder">
+        <x-honeypot livewire-model="extraFields" />
         <div class="mt-8 grid grid-cols-6 gap-6">
             @if ($canCreate)
                 <!-- Name -->
@@ -18,7 +19,7 @@
                 <!-- Email -->
                 <div class="col-span-6">
                     <x-guest-label for="email" value="{{ __('Email Address')}}" />
-                    <x-guest-input wire:model="email" id="email" type="email" class="mt-1 w-full" />
+                    <x-guest-input wire:model="email" required id="email" type="email" class="mt-1 w-full" />
                     <x-guest-input-error for="email" class="mt-2" />
                 </div>
                 <!-- Phone -->
@@ -100,4 +101,14 @@
             </x-guest-submit>
         </div>
     </form>
+    <x-guest-dialog wire:model="confirmingOrderCreation">
+        <x-slot name="title">{{ __('Thanks for Registering!') }}</x-slot>
+        <x-slot name="content">
+            <p class="text-base text-gravel-700 dark:text-ash-500">Check your email for a confirmation. Hang on to those details for your records.</p>
+            <p class="text-base mt-3 text-gravel-700 dark:text-ash-500">We look forward to seeing you!</p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-guest-submit type="button" wire:loading.attr="disabled" wire:click.prevent="$toggle('confirmingOrderCreation')">OK</x-guest-button>
+        </x-slot>
+    </x-guest-dialog>
 </div>

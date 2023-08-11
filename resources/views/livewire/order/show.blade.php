@@ -85,11 +85,11 @@
             <!-- Bracelet Details -->
             <x-action-section class="mt-10" submit="updateDetails">
                 <x-slot name="title">
-                    {{ __('Customer Details') }}
+                    {{ __('Bracelets') }}
                 </x-slot>
 
                 <x-slot name="description">
-                    {{ __('Details for the customer that placed this order.') }}
+                    {{ __('Details for the bracelets in this order.') }}
                 </x-slot>
 
                 <x-slot name="content">
@@ -147,6 +147,82 @@
                         @can('orders:update', $order)
                             <x-button wire:click.prevent="$emit('showLinkBraceletModal')">
                                 {{ __('Link a Bracelet') }}
+                            </x-button>
+                        @endcan
+                    </div>
+                    @can('orders:update', $order)
+                        @livewire('order.link-bracelet-modal', ['order' => $order])
+                        <!-- Bracelet Unlink Confirmation -->
+                        <x-confirmation-modal wire:model="confirmingBraceletUnlink">
+                            <x-slot name="title">
+                                {{ __('Unlink Bracelet') }}
+                            </x-slot>
+
+                            <x-slot name="content">
+                                {{ __('Are you sure you want to remove this bracelet from this order? You\'ll have to manually re-attach this bracelet once unlinked.') }}
+                            </x-slot>
+
+                            <x-slot name="footer">
+                                <x-secondary-button wire:click="$toggle('confirmingBraceletUnlink')" wire:loading.attr="disabled">
+                                    {{ __('Cancel') }}
+                                </x-secondary-button>
+
+                                <x-danger-button class="ml-3" wire:click="confirmUnlinkBracelet" wire:loading.attr="disabled">
+                                    {{ __('Unlink Bracelet') }}
+                                </x-danger-button>
+                            </x-slot>
+                        </x-confirmation-modal>
+                    @endcan
+                </x-slot>
+            </x-action-section>
+
+            <x-action-section class="mt-10" submit="updateDetails">
+                <x-slot name="title">
+                    {{ __('Order Notificatioins') }}
+                </x-slot>
+
+                <x-slot name="description">
+                    {{ __('Notifications (emails) sent for this order.') }}
+                </x-slot>
+
+                <x-slot name="content">
+                    <div class="space-y-6" wire:model="order.notifications">
+                        @if(count($order->notifications) <= 0)
+                            <div class="flex items-center justify-between">
+                                <div class="text-gray-600">No emails have been sent for this order yet.</div>
+                            </div>
+                        @else
+                            <div class="-m-1 5 overflow-x-auto">
+                                <div class="p-1 min-w-full inline-block align-middle">
+                                    <div class="border rounded-lg overflow-hidden">
+                                        <table class="border-collapse divide-y divide-gray-200 min-w-full">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($order->notifications as $notification)
+                                                <tr class="odd:bg-white even:bg-gray-100">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                                                        {{ $notification->type }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                                                        {{ $notification->created_at->format('F j, Y h:i A') }}
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @can('orders:update', $order)
+                            <x-button wire:click.prevent="$emit('resendConfirmation')">
+                                {{ __(':label Confirmation', ['label' => $order->notifications->count() > 0 ? 'Re-Send' : 'Send']) }}
                             </x-button>
                         @endcan
                     </div>

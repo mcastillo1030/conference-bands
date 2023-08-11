@@ -4,11 +4,16 @@ namespace App\Http\Livewire\Order;
 
 use App\Models\Bracelet;
 use App\Models\Customer;
+use App\Providers\OrderCreated;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
+use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
 
 class GuestAddOrder extends Component
 {
+    use UsesSpamProtection;
+
      /**
      * Bracelets.
      *
@@ -44,6 +49,17 @@ class GuestAddOrder extends Component
      */
     public $phone = '';
 
+    /**
+     * Honeypot data.
+     */
+    public HoneypotData $extraFields;
+
+    /**
+     * Show confirmation dialog.
+     * @var bool
+     */
+    public $confirmingOrderCreation = false;
+
     protected $listeners = [
         'orderCreated' => 'clearForm',
     ];
@@ -67,8 +83,8 @@ class GuestAddOrder extends Component
             'bracelets.*.name' => 'nullable|string|max:255',
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
-            'email' => 'required_without:phone|email|max:255',
-            'phone' => 'required_without:email|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:255',
             'clone.number' => [
                 'required_without:bracelets',
                 'numeric',
@@ -141,7 +157,10 @@ class GuestAddOrder extends Component
     }
 
     public function createOrder() {
+        $this->protectAgainstSpam();
+
         $this->addBracelet();
+
         $validData = $this->validate();
 
 
@@ -175,20 +194,17 @@ class GuestAddOrder extends Component
 
         // emit saved event
         $this->emit('orderCreated', $order->id);
+        OrderCreated::dispatch($order);
     }
 
     public function clearForm() {
-        // $this->bracelets = [];
-        // $this->clone = [
-        //     'number' => '',
-        //     'name' => '',
-        // ];
-        // $this->firstName = '';
-        // $this->lastName = '';
-        // $this->email = '';
-        // $this->phone = '';
-        // $this->resetErrorBag();
-        // $this->reset();
+        $this->reset();
+        $this->confirmingOrderCreation = true;
+    }
+
+    public function mount()
+    {
+        $this->extraFields = new HoneypotData();
     }
 
     public function render()
