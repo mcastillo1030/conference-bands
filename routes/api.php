@@ -68,8 +68,6 @@ Route::post('/new-order', function (Request $request) {
         ],
     ]);
 
-    ray($validData);
-
     // create or update customer
     $customer = Customer::firstOrCreate(
         [
@@ -152,8 +150,6 @@ Route::post('/new-order', function (Request $request) {
         $plResponse = $apiResponse->getResult();
         $pl = $plResponse->getPaymentLink();
 
-        ray($pl);
-
         // Save the payment link and payment ID to the order for reference
         $order->update([
             'payment_link' => $pl->getUrl(),
@@ -199,8 +195,6 @@ Route::get('/confirm-order/{order}', function (Order $order) {
             'confirmation_seen' => true,
         ]);
 
-        ray($order);
-
         return response()->json([
             'order_number' => $order->number,
             'order_email'  => $order->customer->email,
@@ -218,8 +212,9 @@ Route::post('/update-order', function (Request $request) {
         $order = Order::where('square_order_id', $square_id)->first();
 
         if ($order && $order->id_key !== $request['event_id']) {
+            $order_state = Str::lower($updated['state']);
             $order->update([
-                'order_status' => Str::lower($updated['state']),
+                'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
                 'id_key' => $request['event_id'],
             ]);
         }
