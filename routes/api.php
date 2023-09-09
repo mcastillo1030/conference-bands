@@ -3,6 +3,7 @@
 use App\Models\Bracelet;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Providers\OrderCreated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -217,6 +218,8 @@ Route::post('/update-order', function (Request $request) {
                 'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
                 'id_key' => $request['event_id'],
             ]);
+
+            OrderCreated::dispatch($order);
         }
     }
 
