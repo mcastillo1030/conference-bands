@@ -212,7 +212,7 @@ Route::post('/update-order', function (Request $request) {
 
         $order = Order::where('square_order_id', $square_id)->first();
 
-        if ($order && $order->id_key !== $request['event_id']) {
+        if ($order && 'complete' !== $order->order_status && $order->id_key !== $request['event_id']) {
             $order_state = Str::lower($updated['state']);
             $order->update([
                 'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
