@@ -226,7 +226,7 @@ Route::post('/update-order', function (Request $request) {
                         function($notification) {
                             return $notification->type;
                         },
-                        $order->notifications()
+                        $order->notifications->all()
                     )
                 ) === false
             ) {
