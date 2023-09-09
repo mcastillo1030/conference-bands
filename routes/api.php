@@ -219,7 +219,19 @@ Route::post('/update-order', function (Request $request) {
                 'id_key' => $request['event_id'],
             ]);
 
-            OrderCreated::dispatch($order);
+            if (
+                array_search(
+                    'Order Created Email',
+                    array_map(
+                        function($notification) {
+                            return $notification->type;
+                        },
+                        $order->notifications()
+                    )
+                ) === false
+            ) {
+                OrderCreated::dispatch($order);
+            }
         }
     }
 
