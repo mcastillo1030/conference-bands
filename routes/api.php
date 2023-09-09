@@ -158,6 +158,8 @@ Route::post('/new-order', function (Request $request) {
             'square_order_id' => $pl->getOrderId(),
         ]);
 
+        OrderCreated::dispatch($order);
+
         return response()->json([
             'order_number' => $order->number,
             'checkout_url' => $pl->getUrl(),
@@ -218,20 +220,6 @@ Route::post('/update-order', function (Request $request) {
                 'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
                 'id_key' => $request['event_id'],
             ]);
-
-            if (
-                array_search(
-                    'Order Created Email',
-                    array_map(
-                        function($notification) {
-                            return $notification->type;
-                        },
-                        $order->notifications->all()
-                    )
-                ) === false
-            ) {
-                OrderCreated::dispatch($order);
-            }
         }
     }
 
