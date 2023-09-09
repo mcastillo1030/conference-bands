@@ -205,6 +205,8 @@ Route::get('/confirm-order/{order}', function (Order $order) {
 });
 
 Route::post('/update-order', function (Request $request) {
+    ray($request->all());
+
     if ($request['type'] === 'order.updated') {
         $data      = $request['data'];
         $square_id = $data['id'];
