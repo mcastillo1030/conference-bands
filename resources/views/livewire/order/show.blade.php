@@ -89,7 +89,7 @@
                             </div>
                             <div class="col-span-6">
                                 <x-label class="text-slate-400" value="{{ __('Order Notes') }}" />
-                                <span class="mt-1 block w-full">{{$order->order_notes ?? '-'}}</span>
+                                <span class="mt-1 block w-full break-words">{{$order->order_notes ?? '-'}}</span>
                             </div>
                         </div>
                     </x-slot>
