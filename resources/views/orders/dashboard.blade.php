@@ -7,13 +7,13 @@
 
     <div>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            @can('viewAny', (new App\Models\Order))
+            @can('viewAny', App\Models\Order::class)
                 @livewire('order.recent-orders')
 
                 <x-section-border />
             @endcan
 
-            @can('create', (new App\Models\Order))
+            @can('create', App\Models\Order::class)
                 @livewire('order.admin-add-order')
 
                 <x-section-border />

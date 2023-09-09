@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,13 @@ class Order extends Model
 
     protected $fillable = [
         'order_type',
+        'order_status',
+        'id_key',
+        'payment_link',
+        'payment_status',
+        'square_order_id',
+        'order_notes',
+        'confirmation_seen',
     ];
 
     /**
@@ -39,6 +47,22 @@ class Order extends Model
     {
         return 'number';
     }
+
+    /**
+     * Get the order type.
+     */
+    // protected function orderType(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => join(
+    //             ' ',
+    //             array_map(
+    //                 callback: fn (string $word) => ucfirst($word),
+    //                 array: preg_split('/-/', $value),
+    //             ),
+    //         ),
+    //     );
+    // }
 
     /**
      * Get the customer for the order

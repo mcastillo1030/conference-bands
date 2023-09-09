@@ -10,6 +10,10 @@
                 </a>
             </p>
 
+            @php
+                $is_online = Str::contains($order->order_type, 'online', true);
+            @endphp
+
             <x-action-section class="mt-10">
                 <x-slot name="title">
                     {{ __('Order Details') }}
@@ -26,16 +30,71 @@
                         <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
                             <div class="grow">
                                 <x-label class="text-slate-400" value="{{ __('Order Placed') }}" />
-                                <span class="mt-1 block w-full">{{$order->created_at->format('m/d/Y H:i A')}}</span>
+                                <span class="mt-1 block w-full">{{$order->created_at->format('m/d/Y g:i A')}}</span>
                             </div>
                             <div class="grow">
                                 <x-label class="text-slate-400" value="{{ __('Last Update') }}" />
-                                <span class="mt-1 block w-full">{{$order->updated_at->format('m/d/Y H:i A')}}</span>
+                                <span class="mt-1 block w-full">{{$order->updated_at->format('m/d/Y g:i A')}}</span>
                             </div>
+                        </div>
+                        <div class="col-span-6 {{$is_online ? 'flex flex-col sm:flex-row sm:gap-3 gap-2.5"' : ''}}">
+                            <div class="grow">
+                                <x-label class="text-slate-400" value="{{ __('Order Type') }}" />
+                                <span class="mt-1 block w-full">{{Str::title(Str::replace('-', ' ', $order->order_type))}}</span>
+                            </div>
+                            @if ($is_online)
+                                <div class="grow">
+                                    <x-label class="text-slate-400" value="{{ __('Order Status') }}" />
+                                    <span class="mt-1 block w-full">{{Str::title($order->order_status)}}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </x-slot>
             </x-action-section>
+
+            @if ($is_online)
+                <x-action-section class="mt-10">
+                    <x-slot name="title">
+                        {{ __('Square Details') }}
+                    </x-slot>
+
+                    <x-slot name="description">
+                        {{ __('Square Checkout Details.') }}
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <div class="space-y-6 grid grid-cols-1 sm:grid-cols-6 sm:gap-3 gap-2.5">
+                            @if ($order->id_key)
+                                <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
+                                    {{-- <div class="w-full sm:w-1/2">
+                                        <x-label class="text-slate-400" value="{{ __('ID Key') }}" />
+                                        <span class="mt-1 block w-full">{{$order->id_key}}</span>
+                                    </div> --}}
+                                    <div class="w-full">
+                                        <x-label class="text-slate-400" value="{{ __('Payment Link') }}" />
+                                        <{{$order->payment_link ? 'a' : 'button'}} {{$order->payment_link ? "href=$order->payment_link" : "type='button'"}} class="mt-1 block {{$order->payment_link ? 'w-full' : ''}}">{{$order->payment_link ?? 'Generate Payment Link'}}</{{$order->payment_link ? 'a' : 'button'}}>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
+                                <div class="w-full sm:w-1/2">
+                                    <x-label class="text-slate-400" value="{{ __('Payment Status') }}" />
+                                    <span class="mt-1 block w-full">{{$order->payment_status ?? 'Link not generated.'}}</span>
+                                </div>
+                                <div class="w-full sm:w-1/2">
+                                    <x-label class="text-slate-400" value="{{ __('Square Order ID') }}" />
+                                    <span class="mt-1 block w-full">{{$order->square_order_id ?? '-'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-span-6">
+                                <x-label class="text-slate-400" value="{{ __('Order Notes') }}" />
+                                <span class="mt-1 block w-full">{{$order->order_notes ?? '-'}}</span>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-action-section>
+            @endif
 
             <x-action-section class="mt-10">
                 <x-slot name="title">

@@ -14,7 +14,8 @@
         "livewire/livewire": "^2.11",
         "mailersend/laravel-driver": "^2.2",
         "spatie/laravel-honeypot": "^4.3",
-        "spatie/laravel-ray": "^1.32"
+        "spatie/laravel-ray": "^1.32",
+        "square/square": "30.0.0.20230816"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

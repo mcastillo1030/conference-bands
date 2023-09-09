@@ -168,9 +168,9 @@ class GuestAddOrder extends Component
         $customer = Customer::firstOrCreate(
             [
                 'email' => $validData['email'],
-                'phone_number' => $validData['phone'],
             ],
             [
+                'phone_number' => $validData['phone'],
                 'first_name' => $validData['firstName'],
                 'last_name' => $validData['lastName'],
             ],

@@ -7,13 +7,13 @@
 
     <div>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            @can('create', (new App\Models\Bracelet))
+            @can('create', App\Models\Bracelet::class)
                 @livewire('bracelet.add-bracelet-form')
 
                 <x-section-border />
             @endcan
 
-            @can('viewAny', (new App\Models\Bracelet))
+            @can('viewAny', App\Models\Bracelet::class)
                 @livewire('bracelet.show-bracelets')
 
                 <x-section-border />

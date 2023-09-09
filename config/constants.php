@@ -9,5 +9,6 @@ return [
         'system',
         'reserved',
         'registered',
-    ]
+    ],
+    'square_item_name' => 'RMT Wristband Reservation',
 ];

@@ -15,12 +15,16 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link href="{{ route('bracelets.dashboard') }}" :active="request()->routeIs('bracelets.dashboard')">
-                        {{ __('Bracelets') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('orders.dashboard') }}" :active="request()->routeIs('orders.dashboard')">
-                        {{ __('Orders') }}
-                    </x-nav-link>
+                    @can('viewAny', App\Models\Bracelet::class)
+                        <x-nav-link href="{{ route('bracelets.dashboard') }}" :active="request()->routeIs('bracelets.dashboard')">
+                            {{ __('Bracelets') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('viewAny', App\Models\Order::class)
+                        <x-nav-link href="{{ route('orders.dashboard') }}" :active="request()->routeIs('orders.dashboard')">
+                            {{ __('Orders') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -148,6 +152,16 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @can('viewAny', App\Models\Bracelet::class)
+                <x-responsive-nav-link href="{{ route('bracelets.dashboard') }}" :active="request()->routeIs('bracelets.dashboard')">
+                    {{ __('Bracelets') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('viewAny', App\Models\Order::class)
+                <x-responsive-nav-link href="{{ route('orders.dashboard') }}" :active="request()->routeIs('orders.dashboard')">
+                    {{ __('Orders') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->
