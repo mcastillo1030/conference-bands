@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Order;
 
+use App\Events\SquareLinkGenerated;
 use App\Models\Order;
 use App\Providers\ConfirmationResend;
 use App\Providers\OrderCreated;
@@ -138,11 +139,13 @@ class Show extends Component
                 'payment_link' => $pl->getUrl(),
                 'payment_status' => 'pending',
                 'square_order_id' => $pl->getOrderId(),
+                'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . 'one_time_action:needs_payment',
             ]);
 
+            // Send user an email with the link
+            SquareLinkGenerated::dispatch($this->order);
         } else {
             $errors = $apiResponse->getErrors();
-            // ray($errors);
             $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
                 '; ',
                 array_map(
@@ -159,8 +162,6 @@ class Show extends Component
                 'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
             ]);
         }
-
-        OrderCreated::dispatch($this->order);
 
         $this->order->refresh();
     }

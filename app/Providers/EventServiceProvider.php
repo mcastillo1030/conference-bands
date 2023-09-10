@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Events\JetstreamUserCreated;
+use App\Events\SquareLinkGenerated;
 use App\Listeners\AttachTeamToUser;
 use App\Listeners\SendNewUserPasswordEmail;
+use App\Listeners\SendSquareNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -28,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ConfirmationResend::class => [
             ResendConfirmation::class,
+        ],
+        SquareLinkGenerated::class => [
+            SendSquareNotification::class,
         ],
     ];
 

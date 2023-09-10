@@ -216,6 +216,25 @@ Route::post('/update-order', function (Request $request) {
                 'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
                 'id_key' => $request['event_id'],
             ]);
+
+            $notes_array = explode('|', $order->order_notes);
+
+            if ( 'open' === $order_state && array_search( 'one_time_action:needs_payment', $notes_array) >= 0 ) {
+                // remove the one_time_action:needs_payment flag
+                $order->update([
+                    'order_notes' => join(
+                        '|',
+                        array_filter(
+                            $notes_array,
+                            function ($note) {
+                                return $note !== 'one_time_action:needs_payment';
+                            }
+                        )
+                    ),
+                ]);
+
+                OrderCreated::dispatch($order);
+            }
         }
     }
 
