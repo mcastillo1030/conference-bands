@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('payment_link')->nullable();
             $table->string('payment_status')->nullable();
             $table->string('square_order_id')->nullable();
-            $table->string('order_notes')->nullable();
+            $table->longText('order_notes')->nullable();
         });
     }
 
