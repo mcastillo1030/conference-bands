@@ -75,7 +75,8 @@ Route::post('/new-order', function (Request $request) {
             'email' => $validData['email'],
         ],
         [
-            'phone_number' => $validData['phone'],
+            // strip out country code
+            'phone_number' => preg_replace('/^(\+1)/', '', $validData['phone']),
             'first_name' => $validData['firstName'],
             'last_name' => $validData['lastName'],
         ],
