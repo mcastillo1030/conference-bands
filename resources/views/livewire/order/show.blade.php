@@ -67,13 +67,15 @@
                         <div class="space-y-6 grid grid-cols-1 sm:grid-cols-6 sm:gap-3 gap-2.5">
                             @if ($order->id_key)
                                 <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
-                                    {{-- <div class="w-full sm:w-1/2">
-                                        <x-label class="text-slate-400" value="{{ __('ID Key') }}" />
-                                        <span class="mt-1 block w-full">{{$order->id_key}}</span>
-                                    </div> --}}
                                     <div class="w-full">
                                         <x-label class="text-slate-400" value="{{ __('Payment Link') }}" />
-                                        <{{$order->payment_link ? 'a' : 'button'}} {{$order->payment_link ? "href=$order->payment_link" : "type='button'"}} class="mt-1 block {{$order->payment_link ? 'w-full' : ''}}">{{$order->payment_link ?? 'Generate Payment Link'}}</{{$order->payment_link ? 'a' : 'button'}}>
+                                        @if ($order->payment_link)
+                                            <a href="{{$order->payment_link}}" class="mt-1 block w-full">{{$order->payment_link}}</a>
+                                        @else
+                                            <x-button class="mt-2" wire:click.prevent="$emit('generateSquareLink')">
+                                                {{ __('Generate Payment Link') }}
+                                            </x-button>
+                                        @endif
                                     </div>
                                 </div>
                             @endif

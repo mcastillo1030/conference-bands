@@ -4,7 +4,18 @@ namespace App\Http\Livewire\Order;
 
 use App\Models\Order;
 use App\Providers\ConfirmationResend;
+use App\Providers\OrderCreated;
+use Carbon\Carbon;
 use Livewire\Component;
+use Square\Environment;
+use Square\Models\Builders\AddressBuilder;
+use Square\Models\Builders\CheckoutOptionsBuilder;
+use Square\Models\Builders\CreatePaymentLinkRequestBuilder;
+use Square\Models\Builders\MoneyBuilder;
+use Square\Models\Builders\PrePopulatedDataBuilder;
+use Square\Models\Builders\QuickPayBuilder;
+use Square\Models\Currency;
+use Square\SquareClient;
 
 class Show extends Component
 {
@@ -44,6 +55,7 @@ class Show extends Component
         'resendConfirmation' => 'emitConfirmation',
         'braceletLinked' => '$refresh',
         'braceletUnlinked' => '$refresh',
+        'generateSquareLink' => 'emitSquareLink',
     ];
 
     /**
@@ -59,14 +71,98 @@ class Show extends Component
 
     /**
      * Emit confirmation email evetn
-     *
-     * @param int $braceletId
      */
     public function emitConfirmation()
     {
         ConfirmationResend::dispatch($this->order);
         $this->order->refresh();
         // $this->emit('refreshComponent');
+    }
+
+    /**
+     * Emit Square link generation
+     */
+    public function emitSquareLink()
+    {
+        $subtotal = $this->order->bracelets()->count() * config('constants.square.bracelet_cost');
+        $total    = $subtotal + ($subtotal * config('constants.square.transaction_fee')) + config('constants.square.transaction_fee_fixed');
+        $id_key   = uniqid();
+
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_ENVIRONMENT') === 'production' ? Environment::PRODUCTION : Environment::SANDBOX,
+        ]);
+        $checkoutApi = $client->getCheckoutApi();
+
+        $body = CreatePaymentLinkRequestBuilder::init()
+            ->idempotencyKey($id_key)
+            ->quickPay(
+                QuickPayBuilder::init(
+                    config('constants.square.item_name'),
+                    MoneyBuilder::init()
+                        ->amount((int) ceil($total * 100))
+                        ->currency(Currency::USD)
+                        ->build(),
+                    env('SQUARE_LOCATION_ID'),
+                )
+                    ->build()
+            )
+            ->prePopulatedData(
+                PrePopulatedDataBuilder::init()
+                    ->buyerEmail($this->order->customer->email)
+                    ->buyerPhoneNumber($this->order->customer->phoneForSquareApi())
+                    ->buyerAddress(
+                        AddressBuilder::init()
+                            ->firstName($this->order->customer->first_name)
+                            ->lastName($this->order->customer->last_name)
+                            ->build()
+                    )
+                    ->build()
+            )
+            ->checkoutOptions(
+                CheckoutOptionsBuilder::init()
+                    ->redirectUrl(env('SQUARE_REDIRECT_URL') . $this->order->number)
+                    ->build()
+            )
+            ->build();
+
+        $apiResponse = $checkoutApi->createPaymentLink($body);
+        $this->order->update(['id_key' => $id_key]);
+
+        if ($apiResponse->isSuccess()) {
+            $plResponse = $apiResponse->getResult();
+            $pl = $plResponse->getPaymentLink();
+
+            // Save the payment link and payment ID to the order for reference
+            $this->order->update([
+                'payment_link' => $pl->getUrl(),
+                'payment_status' => 'pending',
+                'square_order_id' => $pl->getOrderId(),
+            ]);
+
+        } else {
+            $errors = $apiResponse->getErrors();
+            // ray($errors);
+            $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
+                '; ',
+                array_map(
+                    function ($error) {
+                        return $error->getField() ?
+                            $error->getField() . ': ' . $error->getDetail() :
+                            $error->getDetail();
+                    },
+                    $errors
+                )
+            );
+
+            $this->order->update([
+                'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
+            ]);
+        }
+
+        OrderCreated::dispatch($this->order);
+
+        $this->order->refresh();
     }
 
     /**

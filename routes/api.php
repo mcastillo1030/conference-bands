@@ -4,13 +4,12 @@ use App\Models\Bracelet;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Providers\OrderCreated;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-// use Illuminate\Support\Facades\Http;
 use Square\SquareClient;
 use Square\Environment;
-use Square\Exceptions\ApiException;
 use Square\Models\Builders\AddressBuilder;
 use Square\Models\Builders\CheckoutOptionsBuilder;
 use Square\Models\Builders\CreatePaymentLinkRequestBuilder;
@@ -40,14 +39,10 @@ Route::get('/bracelet-availability', function () {
 
     return response()->json([
         'available' => $bracelets->count(),
-        // 'available' => 0,
     ]);
 });
 
 Route::post('/new-order', function (Request $request) {
-    $bracelet_cost         = 25;
-    $transaction_fee       = 0.029;
-    $transaction_fee_fixed = 0.30;
     $bracelets             = Bracelet::where('group', 'like', "%online%")
         ->orWhere('group', 'like', "%Online%")
         ->get()
@@ -75,8 +70,8 @@ Route::post('/new-order', function (Request $request) {
             'email' => $validData['email'],
         ],
         [
-            // strip out country code
-            'phone_number' => preg_replace('/^(\+1)/', '', $validData['phone']),
+            // strip out country code & any dashes
+            'phone_number' => preg_replace('/^(\+1)|-/', '', $validData['phone']),
             'first_name' => $validData['firstName'],
             'last_name' => $validData['lastName'],
         ],
@@ -101,8 +96,8 @@ Route::post('/new-order', function (Request $request) {
     /**
      * Prepare to create Square checkout
      */
-    $subtotal = $attachable_bracelets->count() * $bracelet_cost;
-    $total    = $subtotal + ($subtotal * $transaction_fee) + $transaction_fee_fixed;
+    $subtotal = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
+    $total    = $subtotal + ($subtotal * config('constants.square.transaction_fee')) + config('constants.square.transaction_fee_fixed');
     $id_key   = uniqid();
 
     $client = new SquareClient([
@@ -115,7 +110,7 @@ Route::post('/new-order', function (Request $request) {
         ->idempotencyKey($id_key)
         ->quickPay(
             QuickPayBuilder::init(
-                config('constants.square_item_name'),
+                config('constants.square.item_name'),
                 MoneyBuilder::init()
                     ->amount((int) ceil($total * 100))
                     ->currency(Currency::USD)
@@ -167,7 +162,7 @@ Route::post('/new-order', function (Request $request) {
         ]);
     } else {
         $errors = $apiResponse->getErrors();
-        $err_message = join(
+        $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
             '; ',
             array_map(
                 function ($error) {
@@ -184,7 +179,7 @@ Route::post('/new-order', function (Request $request) {
         ]);
 
         return response()->json([
-            'error' => $err_message,
+            'error' => ($order->order_notes ? $order->order_notes . '|' : '') . $err_message,
         ]);
     }
 });
