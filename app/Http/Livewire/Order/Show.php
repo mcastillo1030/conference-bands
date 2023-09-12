@@ -104,7 +104,7 @@ class Show extends Component
     public function emitSquareLink()
     {
         $subtotal = $this->order->bracelets()->count() * config('constants.square.bracelet_cost');
-        $total    = $subtotal + ($subtotal * config('constants.square.transaction_fee')) + config('constants.square.transaction_fee_fixed');
+        $total    = round(($subtotal + config('constants.square.transaction_fee_fixed')) / (1 - config('constants.square.transaction_fee')), 2);
         $id_key   = uniqid();
 
         $client = new SquareClient([
@@ -125,7 +125,7 @@ class Show extends Component
                 QuickPayBuilder::init(
                     config('constants.square.item_name'),
                     MoneyBuilder::init()
-                        ->amount((int) ceil($total * 100))
+                        ->amount((int) ($total * 100))
                         ->currency(Currency::USD)
                         ->build(),
                     env('SQUARE_LOCATION_ID'),
