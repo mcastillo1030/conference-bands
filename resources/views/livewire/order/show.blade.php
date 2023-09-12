@@ -109,6 +109,18 @@
                                 @endif
                             </div>
                         </div>
+
+                        {{-- Send Needs Payment Email --}}
+                        @php
+                            $can_remind = array_search('one_time_action:needs_payment', $notes_output) !== false && $order->notifications->where('type', 'Order Needs Payment Email')->count() <= 0;
+                        @endphp
+                        @if ($order->payment_status == 'pending' && $order->payment_link && $can_remind)
+                        <div class="mt-4">
+                            <x-button wire:click.prevent="$emit('sendPaymentLink')">
+                                {{ __('Send Payment Reminder') }}
+                            </x-button>
+                        </div>
+                        @endif
                     </x-slot>
                 </x-action-section>
             @endif

@@ -93,8 +93,6 @@ Route::post('/new-order', function (Request $request) {
         $order->bracelets()->save($bracelet);
     }
 
-    // ray($customer->phoneForSquareApi());
-
     /**
      * Prepare to create Square checkout
      */
@@ -152,16 +150,15 @@ Route::post('/new-order', function (Request $request) {
     if ($apiResponse->isSuccess()) {
         $plResponse = $apiResponse->getResult();
         $pl = $plResponse->getPaymentLink();
+        $new_notes = 'payment_link_id:' . $pl->getId() . '|one_time_action:needs_payment';
 
         // Save the payment link and payment ID to the order for reference
         $order->update([
             'payment_link' => $pl->getUrl(),
             'payment_status' => 'pending',
             'square_order_id' => $pl->getOrderId(),
-            'order_notes' => $order->order_notes ? $order->order_notes . '|payment_link_id:' . $pl->getId() : 'payment_link_id:' . $pl->getId(),
+            'order_notes' => $order->order_notes ? $order->order_notes . $new_notes : $new_notes,
         ]);
-
-        OrderCreated::dispatch($order);
 
         return response()->json([
             'order_number' => $order->number,
@@ -217,30 +214,15 @@ Route::post('/update-order', function (Request $request) {
 
         $order = Order::where('square_order_id', $square_id)->first();
 
-        if ($order && 'complete' !== $order->order_status && $order->id_key !== $request['event_id']) {
-            $order_state = Str::lower($updated['state']);
-            $order->update([
-                'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
-                'id_key' => $request['event_id'],
-            ]);
+        if ($order) {
+            $needs_update = 'complete' !== $order->order_status && $order->id_key !== $request['event_id'];
 
-            $notes_array = explode('|', $order->order_notes);
-
-            if ( 'open' === $order_state && array_search( 'one_time_action:needs_payment', $notes_array) >= 0 ) {
-                // remove the one_time_action:needs_payment flag
+            if ($needs_update) {
+                $order_state = Str::lower($updated['state']);
                 $order->update([
-                    'order_notes' => join(
-                        '|',
-                        array_filter(
-                            $notes_array,
-                            function ($note) {
-                                return $note !== 'one_time_action:needs_payment';
-                            }
-                        )
-                    ),
+                    'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
+                    'id_key' => $request['event_id'],
                 ]);
-
-                OrderCreated::dispatch($order);
             }
         }
     }
@@ -253,15 +235,37 @@ Route::post('/update-order', function (Request $request) {
         $order = Order::where('square_order_id', $square_id)->first();
 
         if ($order) {
+            $notes_array = explode('|', $order->order_notes);
+            $updated = false;
+
             if (
                 array_search(
                     'payment_idempotency_key:' . $request['event_id'],
-                    explode('|', $order->order_notes)
+                    $notes_array
                 ) === false
             ) {
+                $notes_array[] = 'payment_idempotency_key:' . $request['event_id'];
+                $updated = true;
+            }
+
+
+            if ( array_search( 'one_time_action:needs_payment', $notes_array) !== false ) {
+                // remove the one_time_action:needs_payment flag
+                $updated = true;
+                $notes_array = array_filter(
+                    $notes_array,
+                    function ($note) {
+                        return $note !== 'one_time_action:needs_payment';
+                    }
+                );
+
+                OrderCreated::dispatch($order);
+            }
+
+            if ($updated) {
                 $order->update([
                     'payment_status' => Str::lower($payment['status']),
-                    'order_notes' => ( $order->order_notes ? $order->order_notes . '|' : '') . 'payment_idempotency_key:' . $request['event_id'] . '|receipt_url:' . $payment['receipt_url'],
+                    'order_notes' => join( '|', $notes_array ),
                 ]);
             }
         }

@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Events\JetstreamUserCreated;
+use App\Events\OrderCancelled;
 use App\Events\SquareLinkGenerated;
 use App\Listeners\AttachTeamToUser;
 use App\Listeners\SendNewUserPasswordEmail;
+use App\Listeners\SendOrderCancelledAdmin;
+use App\Listeners\SendOrderCancelledEmail;
 use App\Listeners\SendSquareNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -33,6 +36,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         SquareLinkGenerated::class => [
             SendSquareNotification::class,
+        ],
+        OrderCancelled::class => [
+            SendOrderCancelledEmail::class,
+            SendOrderCancelledAdmin::class,
         ],
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Order;
 
+use App\Events\OrderCancelled;
 use App\Events\SquareLinkGenerated;
 use App\Models\Order;
 use App\Providers\ConfirmationResend;
@@ -64,6 +65,7 @@ class Show extends Component
         'braceletLinked' => '$refresh',
         'braceletUnlinked' => '$refresh',
         'generateSquareLink' => 'emitSquareLink',
+        'sendPaymentLink' => 'emitPaymentEmail',
     ];
 
     /**
@@ -75,6 +77,15 @@ class Show extends Component
     {
         $this->confirmingBraceletUnlink = true;
         $this->braceletId = $braceletId;
+    }
+
+    /**
+     * Emit confirmation email evetn
+     */
+    public function paymentEmail()
+    {
+        SquareLinkGenerated::dispatch($this->order);
+        $this->order->refresh();
     }
 
     /**
@@ -291,6 +302,8 @@ class Show extends Component
             $bracelet->status = 'system';
             $bracelet->save();
         });
+
+        OrderCancelled::dispatch($this->order);
 
         $this->confirmingOrderCancellation = false;
         $this->order->refresh();
