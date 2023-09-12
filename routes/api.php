@@ -93,6 +93,8 @@ Route::post('/new-order', function (Request $request) {
         $order->bracelets()->save($bracelet);
     }
 
+    // ray($customer->phoneForSquareApi());
+
     /**
      * Prepare to create Square checkout
      */
@@ -105,6 +107,12 @@ Route::post('/new-order', function (Request $request) {
         'environment' => env('SQUARE_ENVIRONMENT') === 'production' ? Environment::PRODUCTION : Environment::SANDBOX,
     ]);
     $checkoutApi = $client->getCheckoutApi();
+
+    $prePopulatedData = PrePopulatedDataBuilder::init()
+        ->buyerEmail($customer->email);
+    if ($customer->phoneForSquareApi()) {
+        $prePopulatedData->buyerPhoneNumber($customer->phoneForSquareApi());
+    }
 
     $body = CreatePaymentLinkRequestBuilder::init()
         ->idempotencyKey($id_key)
@@ -119,18 +127,16 @@ Route::post('/new-order', function (Request $request) {
             )
                 ->build()
         )
-        ->prePopulatedData(
-            PrePopulatedDataBuilder::init()
-                ->buyerEmail($customer->email)
-                ->buyerPhoneNumber($customer->phone_number)
-                ->buyerAddress(
-                    AddressBuilder::init()
-                        ->firstName($customer->first_name)
-                        ->lastName($customer->last_name)
-                        ->build()
-                )
-                ->build()
-        )
+    ->prePopulatedData(
+        $prePopulatedData
+            ->buyerAddress(
+                AddressBuilder::init()
+                    ->firstName($customer->first_name)
+                    ->lastName($customer->last_name)
+                    ->build()
+            )
+            ->build()
+    )
         ->checkoutOptions(
             CheckoutOptionsBuilder::init()
                 ->redirectUrl(env('SQUARE_REDIRECT_URL') . $order->number)

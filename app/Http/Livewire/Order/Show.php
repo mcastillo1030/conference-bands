@@ -95,6 +95,12 @@ class Show extends Component
         ]);
         $checkoutApi = $client->getCheckoutApi();
 
+        $prePopulatedData = PrePopulatedDataBuilder::init()
+            ->buyerEmail($this->order->customer->email);
+        if ($this->order->customer->phoneForSquareApi()) {
+            $prePopulatedData->buyerPhoneNumber($this->order->customer->phoneForSquareApi());
+        }
+
         $body = CreatePaymentLinkRequestBuilder::init()
             ->idempotencyKey($id_key)
             ->quickPay(
@@ -109,9 +115,7 @@ class Show extends Component
                     ->build()
             )
             ->prePopulatedData(
-                PrePopulatedDataBuilder::init()
-                    ->buyerEmail($this->order->customer->email)
-                    ->buyerPhoneNumber($this->order->customer->phoneForSquareApi())
+                $prePopulatedData
                     ->buyerAddress(
                         AddressBuilder::init()
                             ->firstName($this->order->customer->first_name)

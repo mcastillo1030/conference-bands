@@ -157,7 +157,9 @@ class GuestAddOrder extends Component
     }
 
     public function createOrder() {
-        $this->protectAgainstSpam();
+        if (env('APP_ENV') == 'production') {
+            $this->protectAgainstSpam();
+        }
 
         $this->addBracelet();
 
