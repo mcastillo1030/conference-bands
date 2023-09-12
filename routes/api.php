@@ -158,6 +158,7 @@ Route::post('/new-order', function (Request $request) {
             'payment_link' => $pl->getUrl(),
             'payment_status' => 'pending',
             'square_order_id' => $pl->getOrderId(),
+            'order_notes' => $order->order_notes ? $order->order_notes . '|payment_link_id:' . $pl->getId() : 'payment_link_id:' . $pl->getId(),
         ]);
 
         OrderCreated::dispatch($order);

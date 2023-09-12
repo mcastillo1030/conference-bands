@@ -49,6 +49,13 @@ class Show extends Component
     public $confirmingOrderDeletion = false;
 
     /**
+     * Flag to confirm if the user wants to cancel the order.
+     *
+     * @var bool
+     */
+    public $confirmingOrderCancellation = false;
+
+    /**
      * Event listeners
      */
     protected $listeners = [
@@ -211,6 +218,82 @@ class Show extends Component
         $this->confirmingOrderDeletion = false;
         $this->emit('orderDeleted');
         return redirect()->route('orders.index');
+    }
+
+    public function cancelOrder()
+    {
+        // Is the payment status 'completed' ?
+        if ($this->order->order_type != 'online' || $this->order->payment_status === 'completed') {
+            $this->confirmingOrderCancellation = false;
+            return;
+        }
+
+        // Send API request to Square to delete the payment link
+        $notes_array = explode('|', $this->order->order_notes);
+        $pmt_note  = array_filter(
+            $notes_array,
+            function ($note) {
+                return preg_match('/^payment_link_id:/', $note);
+            }
+        );
+
+
+        if (empty($pmt_note)) {
+            $this->order->update([
+                'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . 'order_cancel_failed:payment_link_id_not_found',
+            ]);
+            $this->confirmingOrderCancellation = false;
+            return;
+        }
+
+
+        $link_id = preg_replace('/^payment_link_id:/', '', $pmt_note[0]);
+
+        $client  = new SquareClient([
+            'accessToken' => env('SQUARE_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_ENVIRONMENT') === 'production' ? Environment::PRODUCTION : Environment::SANDBOX,
+        ]);
+        $checkoutApi = $client->getCheckoutApi();
+
+        $apiResponse = $checkoutApi->deletePaymentLink($link_id);
+
+        if ($apiResponse->isSuccess()) {
+            $this->order->update([
+                'id_key'         => null,
+                'payment_link'   => null,
+                'payment_status' => 'cancelled',
+                'order_notes'    => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . 'order_cancelled:<<' . Carbon::now()->format( 'Y-m-d H:i:s' ) . '>>',
+            ]);
+
+        } else {
+            $errors = $apiResponse->getErrors();
+            $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
+                '; ',
+                array_map(
+                    function ($error) {
+                        return $error->getField() ?
+                            $error->getField() . ': ' . $error->getDetail() :
+                            $error->getDetail();
+                    },
+                    $errors
+                )
+            );
+
+            $this->order->update([
+                'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
+            ]);
+        }
+
+        // Unlink all bracelets from the order
+        $this->order->bracelets()->each(function ($bracelet) {
+            $bracelet->order_id = null;
+            $bracelet->name = null;
+            $bracelet->status = 'system';
+            $bracelet->save();
+        });
+
+        $this->confirmingOrderCancellation = false;
+        $this->order->refresh();
     }
 
     public function render()

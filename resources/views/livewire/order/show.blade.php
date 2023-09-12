@@ -91,12 +91,78 @@
                             </div>
                             <div class="col-span-6">
                                 <x-label class="text-slate-400" value="{{ __('Order Notes') }}" />
-                                <span class="mt-1 block w-full break-words">{{$order->order_notes ?? '-'}}</span>
+                                @php
+                                    $notes_output = ['-'];
+
+                                    if ($order->order_notes) {
+                                        $notes_output = explode('|', $order->order_notes);
+                                    }
+                                @endphp
+                                @if (count($notes_output) == 1 && $notes_output[0] == '-')
+                                    <span class="mt-1 block w-full break-words">{{$notes_output[0];}}</span>
+                                @else
+                                    <ul class="mt-1 list-disc list-inside">
+                                        @foreach ($notes_output as $note)
+                                            <li class="break-words">{{$note}}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </div>
                         </div>
                     </x-slot>
                 </x-action-section>
             @endif
+
+            @can('orders:delete', $order)
+                @php
+                    $is_cancellable = $is_online && $order->payment_status == 'pending';
+                @endphp
+
+                @if ($is_cancellable)
+                    <!-- Cancel Order (cancel Squre Link) -->
+                    <x-action-section class="mt-10">
+                        <x-slot name="title">
+                            {{ __('Cancel Order') }}
+                        </x-slot>
+
+                        <x-slot name="description">
+                            {{ __('Cancel the payment link for this order.') }}
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <div class="max-w-xl text-sm text-gray-600">
+                                {{ __('Cancelling an online order means cancelling the Square payment link. This can only be done while the payment is pending. This cannot be undone.') }}
+                            </div>
+
+                            <div class="mt-5">
+                                <x-danger-button wire:click="$toggle('confirmingOrderCancellation')" wire:loading.attr="disabled">
+                                    {{ __('Cancel order') }}
+                                </x-danger-button>
+                            </div>
+
+                            <x-confirmation-modal wire:model="confirmingOrderCancellation">
+                                <x-slot name="title">
+                                    {{ __('Cancel Order') }}
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    {{ __('Are you sure you want to cancel this order? This cannot be undone.') }}
+                                </x-slot>
+
+                                <x-slot name="footer">
+                                    <x-secondary-button wire:click="$toggle('confirmingOrderCancellation')" wire:loading.attr="disabled">
+                                        {{ __('Go Back') }}
+                                    </x-secondary-button>
+
+                                    <x-danger-button class="ml-3" wire:click="cancelOrder" wire:loading.attr="disabled">
+                                        {{ __('Cancel Order') }}
+                                    </x-danger-button>
+                                </x-slot>
+                            </x-confirmation-modal>
+                        </x-slot>
+                    </x-action-section>
+                @endif
+            @endcan
 
             <x-action-section class="mt-10">
                 <x-slot name="title">
