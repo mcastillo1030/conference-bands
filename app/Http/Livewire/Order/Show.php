@@ -65,7 +65,7 @@ class Show extends Component
         'braceletLinked' => '$refresh',
         'braceletUnlinked' => '$refresh',
         'generateSquareLink' => 'emitSquareLink',
-        'sendPaymentLink' => 'emitPaymentEmail',
+        'sendPaymentLink' => 'paymentEmail',
         'fetchPaymentLink' => 'retrievePaymentLink',
     ];
 
@@ -96,7 +96,6 @@ class Show extends Component
     {
         ConfirmationResend::dispatch($this->order);
         $this->order->refresh();
-        // $this->emit('refreshComponent');
     }
 
     /**
@@ -194,7 +193,6 @@ class Show extends Component
      */
     public function retrievePaymentLink()
     {
-        ray('fetching payment link');
         $notes_array = explode('|', $this->order->order_notes);
         $client = new SquareClient([
             'accessToken' => env('SQUARE_ACCESS_TOKEN'),
@@ -209,13 +207,11 @@ class Show extends Component
             $listPaymentLinksResponse = $apiResponse->getResult();
 
             do  {
-                ray('looping');
                 foreach ($listPaymentLinksResponse->getPaymentLinks() as $pl) {
                     if ($pl->getOrderId() !== $this->order->square_order_id) {
                         continue;
                     }
 
-                    ray('found payment link, updating order');
                     array_push($notes_array, 'payment_link_id:' . $pl->getId());
                     $this->order->update(['order_notes' => join('|', $notes_array)]);
                 }
@@ -224,14 +220,12 @@ class Show extends Component
             } while ($listPaymentLinksResponse->getCursor() && array_search('payment_link_id:' . $pl->getId(), $notes_array) === false);
 
             if (preg_match('/payment_link_id:/', join('|', $notes_array)) === 0) {
-                ray('payment link not found');
                 $this->order->update([
                     'order_notes' => join('|', $notes_array) . '|fetch_payment_link_id_failed:payment_link_id_does_not_exist',
                 ]);
             }
         } else {
             $errors = $apiResponse->getErrors();
-            ray($errors);
             $notes_array[] = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
                 '; ',
                 array_map(
