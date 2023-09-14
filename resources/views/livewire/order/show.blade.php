@@ -112,15 +112,21 @@
 
                         {{-- Send Needs Payment Email --}}
                         @php
-                            $can_remind = array_search('one_time_action:needs_payment', $notes_output) !== false && $order->notifications->where('type', 'Order Needs Payment Email')->count() <= 0;
+                            $can_remind = array_search('one_time_action:needs_payment', $notes_output) !== false;
+                            $needs_pli  = preg_match('/payment_link_id:/', $order->order_notes) === 0;
                         @endphp
+                        <div class="mt-4 flex gap-x-4">
+                        @if ($needs_pli)
+                            <x-button wire:click.prevent="$emit('fetchPaymentLink')">
+                                {{ __('Retrieve Payment Link ID') }}
+                            </x-button>
+                        @endif
                         @if ($order->payment_status == 'pending' && $order->payment_link && $can_remind)
-                        <div class="mt-4">
                             <x-button wire:click.prevent="$emit('sendPaymentLink')">
                                 {{ __('Send Payment Reminder') }}
                             </x-button>
-                        </div>
                         @endif
+                        </div>
                     </x-slot>
                 </x-action-section>
             @endif

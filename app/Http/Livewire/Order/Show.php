@@ -66,6 +66,7 @@ class Show extends Component
         'braceletUnlinked' => '$refresh',
         'generateSquareLink' => 'emitSquareLink',
         'sendPaymentLink' => 'emitPaymentEmail',
+        'fetchPaymentLink' => 'retrievePaymentLink',
     ];
 
     /**
@@ -182,6 +183,69 @@ class Show extends Component
 
             $this->order->update([
                 'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
+            ]);
+        }
+
+        $this->order->refresh();
+    }
+
+    /**
+     * Fet Square link
+     */
+    public function retrievePaymentLink()
+    {
+        ray('fetching payment link');
+        $notes_array = explode('|', $this->order->order_notes);
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_ENVIRONMENT') === 'production' ? Environment::PRODUCTION : Environment::SANDBOX,
+        ]);
+        $checkoutApi = $client->getCheckoutApi();
+
+        $apiResponse = $checkoutApi->listPaymentLinks();
+
+        if ($apiResponse->isSuccess()) {
+            // ray('success, will loop');
+            $listPaymentLinksResponse = $apiResponse->getResult();
+
+            do  {
+                ray('looping');
+                foreach ($listPaymentLinksResponse->getPaymentLinks() as $pl) {
+                    if ($pl->getOrderId() !== $this->order->square_order_id) {
+                        continue;
+                    }
+
+                    ray('found payment link, updating order');
+                    array_push($notes_array, 'payment_link_id:' . $pl->getId());
+                    $this->order->update(['order_notes' => join('|', $notes_array)]);
+                }
+
+                $listPaymentLinksResponse = $checkoutApi->listPaymentLinks($listPaymentLinksResponse->getCursor());
+            } while ($listPaymentLinksResponse->getCursor() && array_search('payment_link_id:' . $pl->getId(), $notes_array) === false);
+
+            if (preg_match('/payment_link_id:/', join('|', $notes_array)) === 0) {
+                ray('payment link not found');
+                $this->order->update([
+                    'order_notes' => join('|', $notes_array) . '|fetch_payment_link_id_failed:payment_link_id_does_not_exist',
+                ]);
+            }
+        } else {
+            $errors = $apiResponse->getErrors();
+            ray($errors);
+            $notes_array[] = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
+                '; ',
+                array_map(
+                    function ($error) {
+                        return $error->getField() ?
+                            $error->getField() . ': ' . $error->getDetail() :
+                            $error->getDetail();
+                    },
+                    $errors
+                )
+            );
+
+            $this->order->update([
+                'order_notes' => join('|', $notes_array),
             ]);
         }
 

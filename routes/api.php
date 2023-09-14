@@ -242,7 +242,8 @@ Route::post('/update-order', function (Request $request) {
                 array_search(
                     'payment_idempotency_key:' . $request['event_id'],
                     $notes_array
-                ) === false
+                ) === false &&
+                $order->payment_status !== Str::lower($payment['status'])
             ) {
                 $notes_array[] = 'payment_idempotency_key:' . $request['event_id'];
                 $updated = true;
