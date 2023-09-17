@@ -246,6 +246,11 @@ Route::post('/update-order', function (Request $request) {
                 $order->payment_status !== Str::lower($payment['status'])
             ) {
                 $notes_array[] = 'payment_idempotency_key:' . $request['event_id'];
+
+                if ( $payment['receipt_url'] ) {
+                    $notes_array[] = 'receipt_url:' . $payment['receipt_url'];
+                }
+
                 $updated = true;
             }
 
