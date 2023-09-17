@@ -57,6 +57,13 @@ class Show extends Component
     public $confirmingOrderCancellation = false;
 
     /**
+     * Flag whether cancelling should emit notification.
+     *
+     * @var bool
+     */
+    public $shouldNotify = true;
+
+    /**
      * Event listeners
      */
     protected $listeners = [
@@ -168,8 +175,8 @@ class Show extends Component
             SquareLinkGenerated::dispatch($this->order);
         } else {
             $errors = $apiResponse->getErrors();
-            $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
-                '; ',
+            $err_message = 'create_square_link_error:[' . join(
+                ', ',
                 array_map(
                     function ($error) {
                         return $error->getField() ?
@@ -178,7 +185,7 @@ class Show extends Component
                     },
                     $errors
                 )
-            );
+            ) . ']';
 
             $this->order->update([
                 'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
@@ -226,8 +233,8 @@ class Show extends Component
             }
         } else {
             $errors = $apiResponse->getErrors();
-            $notes_array[] = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
-                '; ',
+            $notes_array[] = 'fetch_payment_link_id_error:[' . join(
+                ', ',
                 array_map(
                     function ($error) {
                         return $error->getField() ?
@@ -236,7 +243,7 @@ class Show extends Component
                     },
                     $errors
                 )
-            );
+            ) . ']';
 
             $this->order->update([
                 'order_notes' => join('|', $notes_array),
@@ -336,8 +343,8 @@ class Show extends Component
 
         } else {
             $errors = $apiResponse->getErrors();
-            $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
-                '; ',
+            $err_message = 'cancel_order_error:['. join(
+                ',',
                 array_map(
                     function ($error) {
                         return $error->getField() ?
@@ -346,7 +353,7 @@ class Show extends Component
                     },
                     $errors
                 )
-            );
+            ) . ']';
 
             $this->order->update([
                 'order_notes' => ($this->order->order_notes ? $this->order->order_notes . '|' : '') . $err_message,
@@ -361,7 +368,9 @@ class Show extends Component
             $bracelet->save();
         });
 
-        OrderCancelled::dispatch($this->order);
+        if ($this->shouldNotify) {
+            OrderCancelled::dispatch($this->order);
+        }
 
         $this->confirmingOrderCancellation = false;
         $this->order->refresh();

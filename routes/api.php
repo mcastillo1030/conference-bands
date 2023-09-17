@@ -166,8 +166,8 @@ Route::post('/new-order', function (Request $request) {
         ]);
     } else {
         $errors = $apiResponse->getErrors();
-        $err_message = Carbon::now()->format( 'Y-m-d H:i:s' ) . '--' . join(
-            '; ',
+        $err_message = 'create_order_error:[' . join(
+            ', ',
             array_map(
                 function ($error) {
                     return $error->getField() ?
@@ -176,7 +176,7 @@ Route::post('/new-order', function (Request $request) {
                 },
                 $errors
             )
-        );
+        ) . ']';
 
         $order->update([
             'order_notes' => $err_message,

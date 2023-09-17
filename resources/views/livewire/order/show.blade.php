@@ -149,7 +149,7 @@
 
                         <x-slot name="content">
                             <div class="max-w-xl text-sm text-gray-600">
-                                {{ __('Cancelling an online order means cancelling the Square payment link. This can only be done while the payment is pending. This cannot be undone.') }}
+                                {{ __('Cancelling an online order means cancelling the Square payment link and removing all bracelets associated with this order. This can only be done while the payment is pending and cannot be undone.') }}
                             </div>
 
                             <div class="mt-5">
@@ -165,6 +165,10 @@
 
                                 <x-slot name="content">
                                     {{ __('Are you sure you want to cancel this order? This cannot be undone.') }}
+                                    <x-label class="flex gap-x-2 mt-3">
+                                        <x-input type="checkbox" wire:model="shouldNotify" />
+                                        <span>Send notification email.</span>
+                                    </x-label>
                                 </x-slot>
 
                                 <x-slot name="footer">
