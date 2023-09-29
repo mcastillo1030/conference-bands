@@ -64,7 +64,12 @@
                                             {{ $bracelet->status }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-                                            {{ $bracelet->name ?? '-' }}
+                                            @if ($bracelet->status === 'system')
+                                                {{ __('-') }}
+                                            @else
+                                                {{ $bracelet->name ?? $bracelet->order->customer->fullName() }}
+                                            @endif
+                                            {{-- {{ $bracelet->status === 'system' : '' name  }} --}}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                                             {{ $bracelet->group ?? '-' }}
