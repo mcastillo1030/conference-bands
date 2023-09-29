@@ -24,6 +24,16 @@ class Search extends Component
         $this->resetPage();
     }
 
+    public function updatingStatuses()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingGroups()
+    {
+        $this->resetPage();
+    }
+
     public function mount()
     {
         foreach(config('constants.bracelet_statuses') as $status) {

@@ -25,6 +25,16 @@ class Search extends Component
         $this->resetPage();
     }
 
+    public function updatingStatuses()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSortByBracelets()
+    {
+        $this->resetPage();
+    }
+
     public function mount()
     {
         // $this->statuses = [];
