@@ -3,6 +3,34 @@
         <x-label for="search" value="{{ __('Search') }}" />
         <x-input wire:model="search" id="search" type="text" class="mt-1 block w-full" />
         <x-input-error for="search" class="mt-2" />
+        <div class="pt-4 flex flex-wrap items-start gap-x-9 sm:gap-x-20">
+            <x-label class="w-full mb-1" value="{{ __('Filters') }}" />
+            <div>
+                <span class="text-gray-400 text-sm">Status</span>
+                {{-- status checkboxes --}}
+                <div class="mt-1 grid grid-cols-1 gap-2">
+                    @foreach ($statuses as $status => $checked)
+                        <label class="inline-flex items-center">
+                            <input wire:model="statuses.{{$status}}" type="checkbox" value="{{$status}}" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <span class="ml-2 text-gray-700 text-sm">{{Str::title($status)}}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+            <div>
+                {{-- <x-label value="{{ __('Group') }}" /> --}}
+                <span class="text-gray-400 text-sm">Group</span>
+                {{-- group checkboxes --}}
+                <div class="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    @foreach ($groups as $group => $checked)
+                        <label class="inline-flex items-center">
+                            <input wire:model="groups.{{$group}}" type="checkbox" value="{{$group}}" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <span class="ml-2 text-gray-700 text-sm">{{$group}}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="p-4 sm:p-6 lg:p-8 bg-white border-b border-gray-200">

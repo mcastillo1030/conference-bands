@@ -10,6 +10,11 @@ return [
         'reserved',
         'registered',
     ],
+    'order_statuses' => [
+        'pending',
+        'complete',
+        'n/a',
+    ],
     'square' => [
         'item_name' => 'RMT Wristband Reservation',
         'bracelet_cost' => 25,
