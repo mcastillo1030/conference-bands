@@ -1,7 +1,7 @@
 <div>
     <div class="p-4 sm:p-6 lg:p-8 bg-white border-b border-gray-200">
         <x-label for="search" value="{{ __('Search') }}" />
-        <x-input wire:model.defer="search" id="search" type="text" class="mt-1 block w-full" />
+        <x-input wire:model="search" id="search" type="text" class="mt-1 block w-full" />
         <x-input-error for="search" class="mt-2" />
         <div class="pt-4 flex flex-wrap items-start gap-x-9 sm:gap-x-20">
             <x-label class="w-full mb-1" value="{{ __('Filters') }}" />

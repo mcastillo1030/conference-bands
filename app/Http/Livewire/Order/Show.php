@@ -210,7 +210,6 @@ class Show extends Component
         $apiResponse = $checkoutApi->listPaymentLinks();
 
         if ($apiResponse->isSuccess()) {
-            // ray('success, will loop');
             $listPaymentLinksResponse = $apiResponse->getResult();
 
             do  {
