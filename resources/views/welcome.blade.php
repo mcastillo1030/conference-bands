@@ -84,7 +84,7 @@
                             @if (OptionsTableHelper::optionExists('app_state') && true === (bool) OptionsTableHelper::getOption('app_state'))
                                 @livewire('order.guest-add-order')
                             @else
-                                <p class="my-5 text-tangerine-500 dark:text-tangerine-400">{{OptionsTableHelper::getOption('app_message') ?? 'Please come back later.'}}</p>
+                                <p class="my-5 text-tangerine-500 dark:text-tangerine-400">{{OptionsTableHelper::optionExists('app_message') ? OptionsTableHelper::getOption('app_message') : 'Please come back later.'}}</p>
                             @endif
                         </div>
                     </div>
