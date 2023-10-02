@@ -43,12 +43,19 @@ Route::get('/bracelet-availability', function () {
 });
 
 Route::post('/new-order', function (Request $request) {
-    $bracelets             = Bracelet::where('group', 'like', "%online%")
+    $bracelets = Bracelet::where('group', 'like', "%online%")
         ->orWhere('group', 'like', "%Online%")
         ->get()
         ->filter(function ($bracelet) {
             return $bracelet->order === null;
         });
+
+    // if there are no more bracelets, return an error
+    if ($bracelets->count() === 0) {
+        return response()->json([
+            'error' => 'There are no more bracelets available.',
+        ]);
+    }
 
     // First create an order
     $validData = $request->validate([
@@ -96,8 +103,9 @@ Route::post('/new-order', function (Request $request) {
     /**
      * Prepare to create Square checkout
      */
-    $subtotal = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
-    $total    = round(($subtotal + config('constants.square.transaction_fee_fixed')) / (1 - config('constants.square.transaction_fee')), 2);
+    // $subtotal = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
+    $total = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
+    // $total    = round(($subtotal + config('constants.square.transaction_fee_fixed')) / (1 - config('constants.square.transaction_fee')), 2);
     $id_key   = uniqid();
 
     $client = new SquareClient([

@@ -81,7 +81,11 @@
                                 Fill out the information below to register your bracelet and ensure your entry.
                             </p>
 
-                            @livewire('order.guest-add-order')
+                            @if (OptionsTableHelper::optionExists('app_state') && true === (bool) OptionsTableHelper::getOption('app_state'))
+                                @livewire('order.guest-add-order')
+                            @else
+                                <p class="my-5 text-tangerine-500 dark:text-tangerine-400">{{OptionsTableHelper::getOption('app_message') ?? 'Please come back later.'}}</p>
+                            @endif
                         </div>
                     </div>
 

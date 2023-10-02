@@ -11,6 +11,10 @@
 
             @livewire('teams.team-member-manager', ['team' => $team])
 
+            @can('teams:update', $team)
+                @livewire('teams.handle-app-state')
+            @endcan
+
             @if (Gate::check('delete', $team) && ! $team->personal_team)
                 <x-section-border />
 
