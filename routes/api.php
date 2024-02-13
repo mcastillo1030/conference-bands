@@ -318,8 +318,6 @@ Route::post('new-rn24-registration', function (Request $request) {
         ]);
     }
 
-    ray($customer);
-
     $registration = $customer->eventRegistrations()->create([
         'name' => 'Revival Night 2024',
         'event_date' => Carbon::create(2024, 4, 16, 19, 30, 0, 'America/New_York')->toDateTimeString(),
