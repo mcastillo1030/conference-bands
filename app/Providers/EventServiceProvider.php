@@ -41,6 +41,13 @@ class EventServiceProvider extends ServiceProvider
             SendOrderCancelledEmail::class,
             SendOrderCancelledAdmin::class,
         ],
+        EventRegistrationCreated::class => [
+            SendEventRegistrationConfirmationCustomer::class,
+            SendEventRegistrationConfirmationAdmin::class,
+        ],
+        EventRegistrationResend::class => [
+            ResendEventRegistrationConfirmation::class,
+        ],
     ];
 
     /**

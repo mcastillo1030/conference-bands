@@ -25,6 +25,11 @@
                             {{ __('Orders') }}
                         </x-nav-link>
                     @endcan
+                    @can('viewAny', App\Models\Order::class)
+                        <x-nav-link href="{{ route('registrations.dashboard') }}" :active="request()->routeIs('registrations.dashboard')">
+                            {{ __('Registrations') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -160,6 +165,11 @@
             @can('viewAny', App\Models\Order::class)
                 <x-responsive-nav-link href="{{ route('orders.dashboard') }}" :active="request()->routeIs('orders.dashboard')">
                     {{ __('Orders') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('viewAny', App\Models\Order::class)
+                <x-responsive-nav-link href="{{ route('registrations.dashboard') }}" :active="request()->routeIs('registrations.dashboard')">
+                    {{ __('Registrations') }}
                 </x-responsive-nav-link>
             @endcan
         </div>

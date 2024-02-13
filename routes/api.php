@@ -3,6 +3,7 @@
 use App\Models\Bracelet;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Providers\EventRegistrationCreated;
 use App\Providers\OrderCreated;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -287,6 +288,49 @@ Route::post('/update-order', function (Request $request) {
 
     return response()->json([
         'success' => 'Webhook received.',
+    ]);
+});
+
+Route::post('new-rn24-registration', function (Request $request) {
+    $validData = $request->validate([
+        'firstName' => 'required|string',
+        'lastName' => 'required|string',
+        'email' => 'required|email',
+        'phoneNumber' => [
+            'required_without:email',
+            'string',
+            'regex:/^\d{3}-\d{3}-\d{4}$/',
+        ],
+        'quantity' => 'required|integer|min:1',
+    ]);
+
+    // try to find customer by phone or email:
+    $customer = Customer::where('email', $validData['email'])
+        ->orWhere('phone_number', preg_replace('/-/', '', $validData['phoneNumber']))
+        ->first();
+
+    if (!$customer) {
+        $customer = Customer::create([
+            'first_name' => $validData['firstName'],
+            'last_name' => $validData['lastName'],
+            'email' => $validData['email'],
+            'phone_number' => preg_replace('/-/', '', $validData['phoneNumber']),
+        ]);
+    }
+
+    ray($customer);
+
+    $registration = $customer->eventRegistrations()->create([
+        'name' => 'Revival Night 2024',
+        'event_date' => Carbon::create(2024, 4, 16, 19, 30, 0, 'America/New_York')->toDateTimeString(),
+        'event_location' => '6011 Ammendale Rd Beltsville, MD 20705',
+        'guests' => $validData['quantity'],
+    ]);
+
+    EventRegistrationCreated::dispatch($registration);
+
+    return response()->json([
+        'success' => 'Registration received.',
     ]);
 });
 

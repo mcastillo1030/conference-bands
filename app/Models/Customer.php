@@ -90,4 +90,12 @@ class Customer extends Model
     {
         return $this->hasManyThrough(Bracelet::class, Order::class);
     }
+
+    /**
+     * Get the event registrations that the customer owns
+     */
+    public function eventRegistrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
 }
