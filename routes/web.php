@@ -30,11 +30,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/mailtest', function () {
-//     $registration = EventRegistration::first();
-//     ray($registration);
-//     return new EventRegistrationConfirmationCustomer($registration);
-// });
+Route::get('/mailtest', function () {
+    $registration = EventRegistration::first();
+    // ray($registration);
+    return new EventRegistrationConfirmationCustomer($registration);
+});
 
 Route::get('/qrtest', function () {
     $registration = EventRegistration::first();
