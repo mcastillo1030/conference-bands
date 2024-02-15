@@ -23,6 +23,9 @@ class SendEventRegistrationConfirmationAdmin
      */
     public function handle(EventRegistrationCreated $event): void
     {
+        // generate qr code
+        $event->eventRegistration->generateQrCode();
+
         Mail::to(config('mail.from.address'))
             ->send(new EventRegistrationConfirmationAdmin($event->eventRegistration));
     }

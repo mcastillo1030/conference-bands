@@ -15,7 +15,7 @@ This is your confirmation thatyou registered for the upcoming event. Below are t
 On the day of the event, please show the QR code below to check in.
 
 <p style="text-align: center;">
-    <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(250)->margin(2)->generate(route('registrations.checkin', $registration))) !!}" style="margin-left: auto; margin-right: auto;" /><br>
+    <img src="{{ $registration->getQrCode() }}" style="margin-left: auto; margin-right: auto;" /><br>
 </p>
 
 If you have any questions, please contact us at [info@revivalmovementusa.org](mailto:info@revivalmovementusa.org)

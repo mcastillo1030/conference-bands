@@ -13,6 +13,7 @@ use App\Mail\SquareNotification;
 use App\Models\EventRegistration;
 use App\Models\Order;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /*
@@ -38,8 +39,13 @@ Route::get('/mailtest', function () {
 
 Route::get('/qrtest', function () {
     $registration = EventRegistration::first();
-    // return qr code that goes to registration check-in url https://revivalmovement.org/registrations/1/checkin
-    return QrCode::size(300)->generate(route('registrations.checkin', $registration));
+
+    if (!Storage::disk('public')->exists('qrcodes/' . $registration->registration_id . '.png')) {
+        $registration->generateQrCode();
+    }
+
+    // redirect to the qr code
+    return response()->file(Storage::disk('public')->path('qrcodes/' . $registration->registration_id . '.png'));
 });
 
 Route::middleware([
