@@ -36,11 +36,11 @@ Route::get('/', function () {
 //     return new EventRegistrationConfirmationCustomer($registration);
 // });
 
-// Route::get('/qrtest', function () {
-//     $registration = EventRegistration::first();
-//     // return qr code that goes to registration check-in url https://revivalmovement.org/registrations/1/checkin
-//     return QrCode::size(300)->generate(route('registrations.checkin', $registration));
-// });
+Route::get('/qrtest', function () {
+    $registration = EventRegistration::first();
+    // return qr code that goes to registration check-in url https://revivalmovement.org/registrations/1/checkin
+    return QrCode::size(300)->generate(route('registrations.checkin', $registration));
+});
 
 Route::middleware([
     'auth:sanctum',
