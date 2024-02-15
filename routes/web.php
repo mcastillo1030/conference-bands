@@ -30,30 +30,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/mailtest', function () {
-    $registration = EventRegistration::first();
-    ray($registration);
-    return new EventRegistrationConfirmationCustomer($registration);
-});
+// Route::get('/mailtest', function () {
+//     $registration = EventRegistration::first();
+//     ray($registration);
+//     return new EventRegistrationConfirmationCustomer($registration);
+// });
 
-Route::get('/qrtest', function () {
-    $registration = EventRegistration::first();
-    // return qr code that goes to registration check-in url https://revivalmovement.org/registrations/1/checkin
-    return QrCode::size(300)->generate(route('registrations.checkin', $registration));
-});
-
-Route::get('/registrations/{registration}/checkin', function(EventRegistration $registration) {
-    $registration->checkin();
-    return redirect()->route('registrations.confirm', $registration);
-})->name('registrations.checkin');
-
-Route::get('/registrations/{registration}/confirm', function(EventRegistration $registration) {
-    if ($registration->checkedin_at === null) {
-        return redirect('/');
-    }
-
-    return view('registrations.confirm', compact('registration'));
-})->name('registrations.confirm');
+// Route::get('/qrtest', function () {
+//     $registration = EventRegistration::first();
+//     // return qr code that goes to registration check-in url https://revivalmovement.org/registrations/1/checkin
+//     return QrCode::size(300)->generate(route('registrations.checkin', $registration));
+// });
 
 Route::middleware([
     'auth:sanctum',
@@ -71,4 +58,17 @@ Route::middleware([
     Route::get('/orders/{order}', OrderShow::class)->name('orders.show');
     Route::get('/registrations/all', AllRegistrations::class)->name('registrations.dashboard');
     Route::get('/registrations/{registration}', ShowRegistration::class)->name('registrations.show');
+
+    Route::get('/registrations/{registration}/checkin', function(EventRegistration $registration) {
+        $registration->checkin();
+        return redirect()->route('registrations.confirm', $registration);
+    })->name('registrations.checkin');
+
+    Route::get('/registrations/{registration}/confirm', function(EventRegistration $registration) {
+        if ($registration->checkedin_at === null) {
+            return redirect('/');
+        }
+
+        return view('registrations.confirm', compact('registration'));
+    })->name('registrations.confirm');
 });
