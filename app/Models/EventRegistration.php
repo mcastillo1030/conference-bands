@@ -63,7 +63,11 @@ class EventRegistration extends Model
     public function getQrCode() : string
     {
         $this->generateQrCode();
-        return Storage::url('qrcodes/' . $this->registration_id . '.png');
+
+        // return Storage::url('qrcodes/' . $this->registration_id . '.png');
+
+        // return app url + qr code path
+        return config('app.url') . '/storage/qrcodes/' . $this->registration_id . '.png';
     }
 
     public function customer() : BelongsTo
