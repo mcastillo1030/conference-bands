@@ -6,6 +6,7 @@ use App\Models\EventRegistration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -36,6 +37,7 @@ class EventRegistrationConfirmationCustomer extends Mailable
     {
         return new Envelope(
             subject: 'Revival Movement - Event Registration Confirmation',
+            from: new Address('info@revivalmovementusa.org', 'Revival Movement, Inc.')
         );
     }
 
