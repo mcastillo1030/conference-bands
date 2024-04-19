@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OrdersExport;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Bracelet;
 use App\Models\Order;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -71,5 +73,14 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         //
+    }
+
+    public function export(string $format)
+    {
+        if (!in_array($format, config('constants.export_formats'))) {
+            abort(404);
+        }
+
+        return Excel::download(new OrdersExport, 'orders.' . $format); // phpcs:ignore
     }
 }

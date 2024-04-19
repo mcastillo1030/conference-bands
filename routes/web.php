@@ -1,5 +1,7 @@
 <?php
 
+use App\Exports\EventRegistrationsExport;
+use App\Exports\OrdersExport;
 use App\Http\Controllers\BraceletController;
 use App\Http\Controllers\OrderController;
 use App\Http\Livewire\Bracelet\Show as BraceletShow;
@@ -12,8 +14,10 @@ use App\Mail\OrderCreatedAdmin;
 use App\Mail\SquareNotification;
 use App\Models\EventRegistration;
 use App\Models\Order;
+use Core\Request\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /*
@@ -37,16 +41,16 @@ Route::get('/mailtest', function () {
     return new EventRegistrationConfirmationCustomer($registration);
 });
 
-Route::get('/qrtest', function () {
-    $registration = EventRegistration::first();
+// Route::get('/qrtest', function () {
+//     $registration = EventRegistration::first();
 
-    if (!Storage::disk('public')->exists('qrcodes/' . $registration->registration_id . '.png')) {
-        $registration->generateQrCode();
-    }
+//     if (!Storage::disk('public')->exists('qrcodes/' . $registration->registration_id . '.png')) {
+//         $registration->generateQrCode();
+//     }
 
-    // redirect to the qr code
-    return response()->file(Storage::disk('public')->path('qrcodes/' . $registration->registration_id . '.png'));
-});
+//     // redirect to the qr code
+//     return response()->file(Storage::disk('public')->path('qrcodes/' . $registration->registration_id . '.png'));
+// });
 
 Route::middleware([
     'auth:sanctum',
@@ -56,21 +60,45 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/bracelets', [BraceletController::class, 'dashboard'])->name('bracelets.dashboard');
-    Route::get('/bracelets/all', [BraceletController::class, 'index'])->name('bracelets.index');
-    Route::get('/bracelets/{bracelet}', BraceletShow::class)->name('bracelets.show');
-    Route::get('/orders', [OrderController::class, 'dashboard'])->name('orders.dashboard');
-    Route::get('/orders/all', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', OrderShow::class)->name('orders.show');
-    Route::get('/registrations/all', AllRegistrations::class)->name('registrations.dashboard');
-    Route::get('/registrations/{registration}', ShowRegistration::class)->name('registrations.show');
 
-    Route::get('/registrations/{registration}/checkin', function(EventRegistration $registration) {
+    // Bracelets
+    Route::get('/bracelets', [BraceletController::class, 'dashboard'])
+        ->name('bracelets.dashboard');
+    Route::get('/bracelets/all', [BraceletController::class, 'index'])
+        ->name('bracelets.index');
+    Route::get('/bracelets/{bracelet}', BraceletShow::class)
+        ->name('bracelets.show');
+
+    // Orders
+    Route::get('/orders', [OrderController::class, 'dashboard'])
+        ->name('orders.dashboard');
+    Route::get('/orders/all', [OrderController::class, 'index'])
+        ->name('orders.index');
+    Route::get('/orders/export/{format}', [OrderController::class, 'export'])
+        ->name('orders.export');
+    Route::get('/orders/{order}', OrderShow::class)
+        ->name('orders.show');
+
+    // Registrations
+    Route::get('/registrations/all', AllRegistrations::class)
+        ->name('registrations.dashboard');
+    Route::get('/registrations/export/{format}', function (string $format) {
+        if (!in_array($format, config('constants.export_formats'))) {
+            abort(404);
+        }
+
+        return Excel::download(new EventRegistrationsExport, 'registrations.' . $format); // phpcs:ignore
+    })
+        ->name('registrations.export');
+    Route::get('/registrations/{registration}', ShowRegistration::class)
+        ->name('registrations.show');
+
+    Route::get('/registrations/{registration}/checkin', function (EventRegistration $registration) {
         $registration->checkin();
         return redirect()->route('registrations.confirm', $registration);
     })->name('registrations.checkin');
 
-    Route::get('/registrations/{registration}/confirm', function(EventRegistration $registration) {
+    Route::get('/registrations/{registration}/confirm', function (EventRegistration $registration) {
         if ($registration->checkedin_at === null) {
             return redirect('/');
         }
