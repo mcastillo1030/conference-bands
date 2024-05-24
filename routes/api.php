@@ -301,7 +301,10 @@ Route::post('new-rn24-registration', function (Request $request) {
     $validData = $request->validate([
         'firstName' => 'required|string',
         'lastName' => 'required|string',
-        'email' => 'required|email',
+        'email' => [
+            'required_without:phoneNumber',
+            'email',
+        ],
         'phoneNumber' => [
             'required_without:email',
             'string',
