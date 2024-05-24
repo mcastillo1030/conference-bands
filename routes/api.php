@@ -303,10 +303,12 @@ Route::post('new-rn24-registration', function (Request $request) {
         'lastName' => 'required|string',
         'email' => [
             'required_without:phoneNumber',
+            'nullable',
             'email',
         ],
         'phoneNumber' => [
             'required_without:email',
+            'nullable',
             'string',
             'regex:/^\d{3}-\d{3}-\d{4}$/',
         ],
@@ -315,9 +317,15 @@ Route::post('new-rn24-registration', function (Request $request) {
     ]);
 
     // try to find customer by phone or email:
-    $customer = Customer::where('email', $validData['email'])
-        ->orWhere('phone_number', preg_replace('/-/', '', $validData['phoneNumber']))
-        ->first();
+    // $has_contact =  || $validData['phoneNumber'];
+
+    $customer = null;
+
+    if ($validData['email']) {
+        $customer = Customer::where('email', $validData['email'])->first();
+    } elseif ($validData['phoneNumber']) {
+        $customer = Customer::where('phone_number', preg_replace('/-/', '', $validData['phoneNumber']))->first();
+    }
 
     if (!$customer) {
         $customer = Customer::create([

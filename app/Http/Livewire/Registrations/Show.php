@@ -34,6 +34,10 @@ class Show extends Component
      */
     public function emitConfirmation()
     {
+        if (!$this->registration->customer->email) {
+            return;
+        }
+
         EventRegistrationResend::dispatch($this->registration);
         $this->registration->refresh();
     }

@@ -45,6 +45,16 @@
                         </div>
                         <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
                             <div class="sm:w-1/2">
+                                <x-label class="text-slate-400" value="{{ __('Email') }}" />
+                                <span class="mt-1 block w-full">{{$registration->customer->email ?? '-'}}</span>
+                            </div>
+                            <div class="sm:w-1/2">
+                                <x-label class="text-slate-400" value="{{ __('Phone') }}" />
+                                <span class="mt-1 block w-full">{{$registration->phone_number ?? '-'}}</span>
+                            </div>
+                        </div>
+                        <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
+                            <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Congregation') }}" />
                                 <span class="mt-1 block w-full">{{$registration->congregation ?? '-'}}</span>
                             </div>
@@ -67,7 +77,7 @@
                 </x-slot>
 
                 <x-slot name="content">
-                    <div class="space-y-6" wire:model="bracelet.notifications">
+                    <div x-data="{ canSendEmails: {{Str::length($registration->customer->email) > 0}} }" class="space-y-6" wire:model="bracelet.notifications">
                         @if(count($registration->notifications) <= 0)
                             <div class="flex items-center justify-between">
                                 <div class="text-gray-600">No emails have been sent for this registration yet.</div>
@@ -101,7 +111,7 @@
                             </div>
                         @endif
 
-                        <x-button wire:click.prevent="$emit('resendConfirmation')">
+                        <x-button x-show="canSendEmails" wire:click.prevent="$emit('resendConfirmation')">
                             {{ __(':label Confirmation', ['label' => $registration->notifications->count() > 0 ? 'Re-Send' : 'Send']) }}
                         </x-button>
                     </div>
