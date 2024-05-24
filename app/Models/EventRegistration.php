@@ -23,6 +23,7 @@ class EventRegistration extends Model
         'event_date',
         'event_location',
         'checkedin_at',
+        'congregation',
     ];
 
     /**
@@ -33,11 +34,11 @@ class EventRegistration extends Model
         parent::boot();
 
         static::creating(function ($registration) {
-            $registration->registration_id = Str::upper( uniqid('REG' . Carbon::now()->format('y') . '-'));
+            $registration->registration_id = Str::upper(uniqid('REG' . Carbon::now()->format('y') . '-'));
         });
     }
 
-    public function checkin() : void
+    public function checkin(): void
     {
         if ($this->checkedin_at !== null) {
             return;
@@ -47,7 +48,7 @@ class EventRegistration extends Model
         $this->save();
     }
 
-    public function generateQrCode() : void
+    public function generateQrCode(): void
     {
         // Check if the qr code already exists
         if (Storage::disk('public')->exists('qrcodes/' . $this->registration_id . '.png')) {
@@ -55,12 +56,15 @@ class EventRegistration extends Model
         }
 
         // generate a qr code and save it to the public directory
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(250)->margin(2)->generate(route('registrations.checkin', $this));
+        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')
+            ->size(250)
+            ->margin(2)
+            ->generate(route('registrations.checkin', $this));
         $qrCodePath = 'qrcodes/' . $this->registration_id . '.png';
         Storage::disk('public')->put($qrCodePath, $qrCode);
     }
 
-    public function getQrCode() : string
+    public function getQrCode(): string
     {
         $this->generateQrCode();
 
@@ -70,12 +74,12 @@ class EventRegistration extends Model
         return config('app.url') . '/storage/qrcodes/' . $this->registration_id . '.png';
     }
 
-    public function customer() : BelongsTo
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function notifications() : MorphMany
+    public function notifications(): MorphMany
     {
         return $this->morphMany(EmailNotification::class, 'notifyable');
     }

@@ -44,7 +44,7 @@ class Show extends Component
         $this->registration->delete();
         $this->confirmingRegistrationDeletion = false;
         $this->emit('orderDeleted');
-        return redirect()->route('registrations.index');
+        return redirect()->route('registrations.dashboard');
     }
 
     public function render()

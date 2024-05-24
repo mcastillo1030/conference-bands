@@ -106,7 +106,11 @@ Route::post('/new-order', function (Request $request) {
      */
     // $subtotal = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
     $total = $attachable_bracelets->count() * config('constants.square.bracelet_cost');
-    // $total    = round(($subtotal + config('constants.square.transaction_fee_fixed')) / (1 - config('constants.square.transaction_fee')), 2);
+    /* $total    = round(
+        ($subtotal + config('constants.square.transaction_fee_fixed')) /
+            (1 - config('constants.square.transaction_fee')),
+        2
+    ); */
     $id_key   = uniqid();
 
     $client = new SquareClient([
@@ -229,7 +233,9 @@ Route::post('/update-order', function (Request $request) {
             if ($needs_update) {
                 $order_state = Str::lower($updated['state']);
                 $order->update([
-                    'order_status' => 'open' === $order_state ? 'complete' : ('draft' === $order_state ? 'pending' : 'n/a' ),
+                    'order_status' => 'open' === $order_state ?
+                        'complete' :
+                        ('draft' === $order_state ? 'pending' : 'n/a' ),
                     'id_key' => $request['event_id'],
                 ]);
             }
@@ -256,7 +262,7 @@ Route::post('/update-order', function (Request $request) {
             ) {
                 $notes_array[] = 'payment_idempotency_key:' . $request['event_id'];
 
-                if ( $payment['receipt_url'] ) {
+                if ($payment['receipt_url']) {
                     $notes_array[] = 'receipt_url:' . $payment['receipt_url'];
                 }
 
@@ -264,7 +270,7 @@ Route::post('/update-order', function (Request $request) {
             }
 
 
-            if ( array_search( 'one_time_action:needs_payment', $notes_array) !== false ) {
+            if (array_search('one_time_action:needs_payment', $notes_array) !== false) {
                 // remove the one_time_action:needs_payment flag
                 $updated = true;
                 $notes_array = array_filter(
@@ -280,7 +286,7 @@ Route::post('/update-order', function (Request $request) {
             if ($updated) {
                 $order->update([
                     'payment_status' => Str::lower($payment['status']),
-                    'order_notes' => join( '|', $notes_array ),
+                    'order_notes' => join('|', $notes_array),
                 ]);
             }
         }
@@ -301,7 +307,8 @@ Route::post('new-rn24-registration', function (Request $request) {
             'string',
             'regex:/^\d{3}-\d{3}-\d{4}$/',
         ],
-        'quantity' => 'required|integer|min:1',
+        // 'quantity' => 'required|integer|min:1',
+        'congregationName' => 'nullable|string',
     ]);
 
     // try to find customer by phone or email:
@@ -318,11 +325,31 @@ Route::post('new-rn24-registration', function (Request $request) {
         ]);
     }
 
+    // Check whehter the customer has already registered for the event
+    $event_name = 'Revival Night 2024 - Boston';
+    if ($customer->eventRegistrations()->where('name', $event_name)->exists()) {
+        return response()->json([
+            'error' => 'You have already registered for this event.',
+        ]);
+    }
+
     $registration = $customer->eventRegistrations()->create([
-        'name' => 'Revival Night 2024',
-        'event_date' => Carbon::create(2024, 4, 16, 19, 30, 0, 'America/New_York')->toDateTimeString(),
-        'event_location' => '6011 Ammendale Rd Beltsville, MD 20705',
-        'guests' => $validData['quantity'],
+      //   'name' => 'Revival Night 2024',
+        'name' => $event_name,
+        // 'event_date' => Carbon::create(2024, 4, 16, 19, 30, 0, 'America/New_York')->toDateTimeString(),
+        'event_date' => Carbon::create(
+            2024,
+            5,
+            24,
+            19,
+            30,
+            0,
+            'America/New_York'
+        )->toDateTimeString(),
+        'event_location' => '88 Broad St Lynn, MA 01902',
+        // 'guests' => $validData['quantity'],
+        'guests' => 1,
+        'congregation' => $validData['congregationName'],
     ]);
 
     EventRegistrationCreated::dispatch($registration);

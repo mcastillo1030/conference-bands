@@ -28,7 +28,6 @@ class OptionsTableHelper
                 'name' => $name,
                 'value' => $value,
             ]);
-            ray('here');
         }
     }
 

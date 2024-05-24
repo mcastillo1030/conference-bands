@@ -1,7 +1,7 @@
 <x-mail::message>
 # Thank you for registering for {{ $registration->name }}!
 
-This is your confirmation thatyou registered for the upcoming event. Below are the details of your registration:
+This is your confirmation that you registered for the upcoming event. Below are the details of your registration:
 
 <x-mail::panel>
 ## Confirmation Number _{{ $registration->registration_id }}_

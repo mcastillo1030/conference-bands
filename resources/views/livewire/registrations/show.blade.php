@@ -24,23 +24,33 @@
                         <h4 class="relative font-semibold mb-3">Registration ID: <span class="font-thin">{{$registration->registration_id}}</span></h4>
 
                         <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
-                            <div class="grow">
+                            <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Created on:') }}" />
                                 <span class="mt-1 block w-full">{{$registration->created_at->format('m/d/Y g:i A')}}</span>
                             </div>
-                            <div class="grow">
+                            <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Last Update') }}" />
                                 <span class="mt-1 block w-full">{{$registration->updated_at->format('m/d/Y g:i A')}}</span>
                             </div>
                         </div>
                         <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
-                            <div class="grow">
+                            <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Event Name') }}" />
                                 <span class="mt-1 block w-full">{{$registration->name}}</span>
                             </div>
-                            <div class="grow">
+                            <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Customer') }}" />
                                 <span class="mt-1 block w-full">{{$registration->customer->fullName()}}</span>
+                            </div>
+                        </div>
+                        <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
+                            <div class="sm:w-1/2">
+                                <x-label class="text-slate-400" value="{{ __('Congregation') }}" />
+                                <span class="mt-1 block w-full">{{$registration->congregation ?? '-'}}</span>
+                            </div>
+                            <div class="sm:w-1/2">
+                                <x-label class="text-slate-400" value="{{ __('Checked In?') }}" />
+                                <span class="mt-1 block w-full">{{$registration->checkedin_at ? $registration->checkedin_at->format('F j, Y h:ia') : 'No'}}</span>
                             </div>
                         </div>
                     </div>
