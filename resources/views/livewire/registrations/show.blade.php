@@ -50,7 +50,9 @@
                             </div>
                             <div class="sm:w-1/2">
                                 <x-label class="text-slate-400" value="{{ __('Phone') }}" />
-                                <span class="mt-1 block w-full">{{$registration->phone_number ?? '-'}}</span>
+                                <span class="mt-1 block w-full">{{$registration->customer->phone_number ? Str::of($registration->customer->phone_number)->pipe(function($str) {
+                                    return preg_replace('/^(\d{3})(\d{3})(\d{4})$/i', '$1-$2-$3', $str);
+                                }) : '-'}}</span>
                             </div>
                         </div>
                         <div class="col-span-6 flex flex-col sm:flex-row sm:gap-3 gap-2.5">
